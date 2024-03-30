@@ -20,11 +20,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import androidx.annotation.NonNull;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import com.google.firebase.firestore.SetOptions;
 import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
@@ -56,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private FirebaseAuth auth;
     private FirebaseAnalytics mFirebaseAnalytics;
+
+    private static final String TAG = "MainActivity";
 
     private final OkHttpClient mOkHttpClient = new OkHttpClient();
     private String mAccessToken, mAccessCode, aAccessToken;
@@ -92,6 +96,8 @@ public class MainActivity extends AppCompatActivity {
             getToken(2);
              // Call to retrieve top artists
         });
+
+
 
         // Initialize the views
         tokenTextView = (TextView) findViewById(R.id.token_text_view);
@@ -149,37 +155,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    /**
-     * Puts spotify token into firestore database
-     * @param token the token from the user
-     */
 
-    private void updateSpotifyTokenInFirestore(String token) {
-        EditText editTextDatabase = findViewById(R.id.editTextDatabase);
-        String username = editTextDatabase.getText().toString();
 
-        if (username.isEmpty()) {
-            Toast.makeText(this, "Username is empty, can't store token.", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
-        Map<String, Object> user = new HashMap<>();
-        user.put("user", user);
-        user.put("spotifyToken", token);
 
-        // Update Firestore collection reference
-        db.collection("sample")
-                // Update document reference to "sample1"
-                .document("sample1")
-                .set(user)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Spotify token successfully stored!"))
-                .addOnFailureListener(e -> Log.w(TAG, "Error storing Spotify token", e));
-
-        Bundle params = new Bundle();
-        params.putString("token_status", "success");
-        mFirebaseAnalytics.logEvent("spotify_token_stored", params);
-
-    }
 
     /**
      * Get user profile
