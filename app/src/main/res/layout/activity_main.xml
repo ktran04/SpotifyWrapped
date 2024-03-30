@@ -39,6 +39,7 @@
         android:layout_marginEnd="16dp"
         app:layout_constraintTop_toBottomOf="@id/title_text_view"/>
 
+<<<<<<< HEAD
     <!-- Get User Data Button -->
     <Button
         android:id="@+id/token_btn"
@@ -53,6 +54,27 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         app:layout_constraintTop_toBottomOf="@id/token_text_view"/>
+=======
+        <Button
+            android:id="@+id/token_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="Login to Spotify" />
+
+        <TextView
+            android:id="@+id/textViewUserInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="User Info"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/buttonSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Login to Spotify Wrapped" />
+>>>>>>> 031363cd1416086f52f4f7f802944ea8efd92a3b
 
     <!-- ScrollView for Response TextView -->
     <ScrollView
@@ -90,10 +112,23 @@
         android:layout_marginEnd="16dp"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
+<<<<<<< HEAD
     <ImageView
         android:id="@+id/image_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scaleType="centerCrop" />
+=======
+        <Button
+            android:id="@+id/profile_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="8dp"
+            android:layout_weight="1"
+            android:text="Get User Profile" />
+
+    </LinearLayout>
+>>>>>>> 031363cd1416086f52f4f7f802944ea8efd92a3b
 
 </androidx.constraintlayout.widget.ConstraintLayout>
