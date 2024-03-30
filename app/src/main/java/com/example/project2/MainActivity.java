@@ -63,12 +63,13 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView tokenTextView, codeTextView, profileTextView;
 
+    private WrappedData user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        user = new WrappedData();
 
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -142,7 +143,8 @@ public class MainActivity extends AppCompatActivity {
             setTextAsync(mAccessCode, codeTextView);
         } else if (TOP_ARTIST_REQUEST_CODE == requestCode) {
             aAccessToken = response.getAccessToken();
-            onGetUserTopArtistsClicked();
+            onGetUserTopArtistsClicked("artists");
+            onGetUserTopArtistsClicked("tracks");
         }
 
     }
@@ -221,8 +223,9 @@ public class MainActivity extends AppCompatActivity {
                     String formattedProfile = "User: " + userProfile.display_name + "\n" +
                             "Followers: " + userProfile.followers.total + "\n" +
                             "Email: " + userProfile.email;
-
-                    setTextAsync(formattedProfile, profileTextView);
+                    user.setUsername(userProfile.display_name);
+                    user.setFollowers(userProfile.followers.total);
+                    user.setEmail(userProfile.email);
                 } catch (IOException e) {
                     Log.d("IO", "Failed to read response: " + e);
                     Toast.makeText(MainActivity.this, "Failed to read response, watch Logcat for more details",
@@ -242,12 +245,12 @@ public class MainActivity extends AppCompatActivity {
             int total;
         }
     }
-    public void onGetUserTopArtistsClicked() {
+    public void onGetUserTopArtistsClicked(String type) {
 
         mAccessToken = this.mAccessToken;
 
 
-        String url = "https://api.spotify.com/v1/me/top/artists";
+        String url = "https://api.spotify.com/v1/me/top/" + type;
 
 
         Request request = new Request.Builder()
@@ -274,17 +277,22 @@ public class MainActivity extends AppCompatActivity {
                     JSONArray itemsArray = jsonObject.getJSONArray("items");
 
 
-                    StringBuilder topArtistsList = new StringBuilder();
-
 
                     for (int i = 0; i < itemsArray.length(); i++) {
                         JSONObject artistObject = itemsArray.getJSONObject(i);
                         String artistName = artistObject.getString("name");
-                        topArtistsList.append(i + 1).append(". ").append(artistName).append("\n");
+                        if (type.equals("artists")) {
+                            user.addArtist(artistName);
+                        } else {
+                            user.addTrack(artistName);
+                            user.addTime(artistObject.getInt("duration_ms") / 1000);
+                        }
+                    }
+                    if (type.equals("tracks")) {
+                        // ADD DISPLAY CODE HERE. ALL NECESSARY DATA IS NOW IN user
                     }
 
-
-                    runOnUiThread(() -> setTextAsync(topArtistsList.toString(), profileTextView));
+                    runOnUiThread(() -> setTextAsync(user.toString(), profileTextView));
                 } catch (IOException | JSONException e) {
                     Log.d("Error", "Failed to read or parse response: " + e);
                     runOnUiThread(() -> Toast.makeText(MainActivity.this, "Failed to process response",
