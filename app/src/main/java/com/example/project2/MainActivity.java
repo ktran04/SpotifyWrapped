@@ -10,6 +10,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import com.example.project2.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -18,11 +20,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import androidx.annotation.NonNull;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import com.google.firebase.firestore.SetOptions;
 import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
@@ -47,10 +51,9 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int AUTH_TOKEN_REQUEST_CODE = 0;
     public static final int AUTH_CODE_REQUEST_CODE = 1;
-    private static final String TAG = "MainActivity";
-    private FirebaseFirestore db;
-    private FirebaseAuth auth;
     private FirebaseAnalytics mFirebaseAnalytics;
+
+    private static final String TAG = "MainActivity";
 
     private final OkHttpClient mOkHttpClient = new OkHttpClient();
     private String mAccessToken, mAccessCode;
@@ -58,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView tokenTextView, codeTextView, profileTextView;
 
+    private Button buttonSignIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,9 +69,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         FirebaseApp.initializeApp(this);
-        db = FirebaseFirestore.getInstance();
-        auth = FirebaseAuth.getInstance();
 
+        buttonSignIn = findViewById(R.id.buttonSignIn);
+
+        buttonSignIn.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, SignInActivity.class);
+            startActivity(intent);
+        });
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
@@ -88,21 +96,33 @@ public class MainActivity extends AppCompatActivity {
             onGetUserProfileClicked();
         });
 
+
+
         // Initialize the views
         tokenTextView = (TextView) findViewById(R.id.token_text_view);
         profileTextView = (TextView) findViewById(R.id.response_text_view);
-
-//        Button writeButton = findViewById(R.id.writeButton);
-//        Button readButton = findViewById(R.id.readButton);
-//        final TextView textViewDatabase = findViewById(R.id.textViewDatabase);
-
-        // Initialize the buttons
-
-
-        // Set the click listeners for the buttons
-
-
     }
+
+    private void updateSpotifyTokenInFirestore(String token) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (currentUser == null) {
+            Log.d(TAG, "No signed-in user found.");
+            return;
+        }
+
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("spotifyToken", token);
+
+        db.collection("sample").document(currentUser.getUid())
+                .set(userData, SetOptions.merge())
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Spotify token successfully stored!"))
+                .addOnFailureListener(e -> Log.w(TAG, "Error storing Spotify token", e));
+    }
+
+
+
 
     /**
      * Get token from Spotify
@@ -139,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
         // Check which request code is present (if any)
         if (AUTH_TOKEN_REQUEST_CODE == requestCode) {
             mAccessToken = response.getAccessToken();
-            // updateSpotifyTokenInFirestore(mAccessToken);
+            updateSpotifyTokenInFirestore(mAccessToken);
 
         } else if (AUTH_CODE_REQUEST_CODE == requestCode) {
             mAccessCode = response.getCode();
@@ -150,37 +170,10 @@ public class MainActivity extends AppCompatActivity {
         profileBtn.performClick();
     }
 
-    /**
-     * Puts spotify token into firestore database
-     * @param token the token from the user
-     */
 
-    private void updateSpotifyTokenInFirestore(String token) {
-        EditText editTextDatabase = findViewById(R.id.editTextDatabase);
-        String username = editTextDatabase.getText().toString();
 
-        if (username.isEmpty()) {
-            Toast.makeText(this, "Username is empty, can't store token.", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
-        Map<String, Object> user = new HashMap<>();
-        user.put("user", user);
-        user.put("spotifyToken", token);
 
-        // Update Firestore collection reference
-        db.collection("sample")
-                // Update document reference to "sample1"
-                .document("sample1")
-                .set(user)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Spotify token successfully stored!"))
-                .addOnFailureListener(e -> Log.w(TAG, "Error storing Spotify token", e));
-
-        Bundle params = new Bundle();
-        params.putString("token_status", "success");
-        mFirebaseAnalytics.logEvent("spotify_token_stored", params);
-
-    }
 
     /**
      * Get user profile
@@ -212,15 +205,36 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 try {
-                    final JSONObject jsonObject = new JSONObject(response.body().string());
-                    setTextAsync(jsonObject.toString(3), profileTextView);
-                } catch (JSONException e) {
-                    Log.d("JSON", "Failed to parse data: " + e);
-                    Toast.makeText(MainActivity.this, "Failed to parse data, watch Logcat for more details",
+                    final String jsonResponse = response.body().string();
+                    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+                    // Parse JSON response into a Java object
+                    UserProfile userProfile = gson.fromJson(jsonResponse, UserProfile.class);
+
+                    // Format the user profile data
+                    String formattedProfile = "User: " + userProfile.display_name + "\n" +
+                            "Followers: " + userProfile.followers.total + "\n" +
+                            "Email: " + userProfile.email;
+
+                    setTextAsync(formattedProfile, profileTextView);
+                } catch (IOException e) {
+                    Log.d("IO", "Failed to read response: " + e);
+                    Toast.makeText(MainActivity.this, "Failed to read response, watch Logcat for more details",
                             Toast.LENGTH_SHORT).show();
                 }
             }
         });
+    }
+
+    // Define a class to represent user profile data
+    class UserProfile {
+        String display_name;
+        Followers followers;
+        String email;
+
+        class Followers {
+            int total;
+        }
     }
 
     /**

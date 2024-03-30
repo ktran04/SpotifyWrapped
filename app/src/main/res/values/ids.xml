@@ -4,4 +4,7 @@
     <item name="textViewDatabase" type="id" />
     <item name="readButton" type="id" />
     <item name="writeButton" type="id" />
+    <item name="textViewLoginHeader" type="id" />
+    <item name="buttonGoToSignUp" type="id" />
+    <item name="buttonSignUp" type="id" />
 </resources>

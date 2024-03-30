@@ -24,7 +24,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:text="Get User Data" />
+            android:text="Login to Spotify" />
+
+        <TextView
+            android:id="@+id/textViewUserInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="User Info"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/buttonSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Login to Spotify Wrapped" />
 
         <TextView
             android:id="@+id/response_text_view"
@@ -47,6 +60,7 @@
             android:layout_margin="8dp"
             android:layout_weight="1"
             android:text="Get User Profile" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
