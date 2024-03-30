@@ -1,7 +1,6 @@
 package com.example.project2;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class WrappedData {
@@ -55,5 +54,13 @@ public class WrappedData {
         }
         out.append("Listening Time: ").append(listeningTime).append(" Seconds");
         return out.toString();
+    }
+
+    public int getTotalTime() {
+        return listeningTime;
+    }
+
+    public List<String> getTracks() {
+        return topTracks;
     }
 }

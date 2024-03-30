@@ -1,15 +1,19 @@
 package com.example.project2;
-
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.content.Intent;
 import android.net.Uri;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.bumptech.glide.Glide;
+import android.widget.ImageView;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -90,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
         profileBtn.setOnClickListener((v) -> {
             onGetUserProfileClicked();
             getToken(2);
-             // Call to retrieve top artists
+            // Call to retrieve top artists
         });
 
         // Initialize the views
@@ -211,27 +215,69 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
+
             public void onResponse(Call call, Response response) throws IOException {
                 try {
-                    final String jsonResponse = response.body().string();
-                    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                    String jsonResponse = response.body().string();
+                    Log.d(TAG, "JSON Response: " + jsonResponse);
 
-                    // Parse JSON response into a Java object
-                    UserProfile userProfile = gson.fromJson(jsonResponse, UserProfile.class);
+                    JSONObject jsonObject = new JSONObject(jsonResponse);
+                    JSONArray itemsArray = jsonObject.getJSONArray("items");
 
-                    // Format the user profile data
-                    String formattedProfile = "User: " + userProfile.display_name + "\n" +
-                            "Followers: " + userProfile.followers.total + "\n" +
-                            "Email: " + userProfile.email;
-                    user.setUsername(userProfile.display_name);
-                    user.setFollowers(userProfile.followers.total);
-                    user.setEmail(userProfile.email);
-                } catch (IOException e) {
-                    Log.d("IO", "Failed to read response: " + e);
-                    Toast.makeText(MainActivity.this, "Failed to read response, watch Logcat for more details",
-                            Toast.LENGTH_SHORT).show();
+                    StringBuilder formattedData = new StringBuilder();
+
+                    // Add header for top tracks
+                    formattedData.append("<h2>Your top tracks!</h2>");
+
+                    for (int i = 0; i < itemsArray.length(); i++) {
+                        JSONObject trackObject = itemsArray.getJSONObject(i);
+                        JSONObject albumObject = trackObject.getJSONObject("album");
+                        JSONArray imagesArray = albumObject.getJSONArray("images");
+                        String imageUrl = "";
+                        if (imagesArray.length() > 0) {
+                            JSONObject imageObject = imagesArray.getJSONObject(0);
+                            imageUrl = imageObject.getString("url");
+                            Log.d(TAG, "Image URL for track " + i + ": " + imageUrl);
+                        }
+
+                        String artistName = "";
+                        JSONArray artistsArray = trackObject.getJSONArray("artists");
+                        if (artistsArray.length() > 0) {
+                            JSONObject artistObject = artistsArray.getJSONObject(0);
+                            artistName = artistObject.getString("name");
+                        }
+
+                        String trackName = trackObject.getString("name");
+
+                        // Load image using Glide
+                        ImageView imageView = new ImageView(MainActivity.this);
+                        Glide.with(MainActivity.this)
+                                .load(imageUrl)
+                                .into(imageView);
+
+                        // Create HTML content for each song box
+                        formattedData.append("<div style=\"display:flex; align-items:center;\">")
+                                .append("<div style=\"width: 200px; height: 200px; margin-right: 10px;\">")
+                                .append(imageView)
+                                .append("</div>")
+                                .append("<div style=\"border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;\">")
+                                .append("<p>").append(trackName).append(" - ").append(artistName).append("</p>")
+                                .append("</div>")
+                                .append("</div>");
+                    }
+
+                    // Display the formatted data with HTML formatting
+                    runOnUiThread(() -> {
+                        profileTextView.setText(Html.fromHtml(formattedData.toString(), Html.FROM_HTML_MODE_COMPACT));
+                        profileTextView.setMovementMethod(LinkMovementMethod.getInstance());
+                    });
+                } catch (IOException | JSONException e) {
+                    Log.e(TAG, "Error processing response: " + e.getMessage());
+                    runOnUiThread(() -> Toast.makeText(MainActivity.this, "Failed to process response",
+                            Toast.LENGTH_SHORT).show());
                 }
             }
+
         });
     }
 
@@ -269,36 +315,66 @@ public class MainActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT).show());
             }
 
+
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 try {
                     String jsonResponse = response.body().string();
+                    Log.d(TAG, "JSON Response: " + jsonResponse);
+
                     JSONObject jsonObject = new JSONObject(jsonResponse);
                     JSONArray itemsArray = jsonObject.getJSONArray("items");
 
+                    StringBuilder formattedData = new StringBuilder();
 
+                    // Add header for top tracks
+                    formattedData.append("<h2>Your top tracks!</h2>");
 
                     for (int i = 0; i < itemsArray.length(); i++) {
-                        JSONObject artistObject = itemsArray.getJSONObject(i);
-                        String artistName = artistObject.getString("name");
-                        if (type.equals("artists")) {
-                            user.addArtist(artistName);
-                        } else {
-                            user.addTrack(artistName);
-                            user.addTime(artistObject.getInt("duration_ms") / 1000);
+                        JSONObject trackObject = itemsArray.getJSONObject(i);
+                        JSONObject albumObject = trackObject.getJSONObject("album");
+                        JSONArray imagesArray = albumObject.getJSONArray("images");
+                        String imageUrl = "";
+                        if (imagesArray.length() > 0) {
+                            JSONObject imageObject = imagesArray.getJSONObject(0);
+                            imageUrl = imageObject.getString("url");
+                            Log.d(TAG, "Image URL for track " + i + ": " + imageUrl);
                         }
-                    }
-                    if (type.equals("tracks")) {
-                        // ADD DISPLAY CODE HERE. ALL NECESSARY DATA IS NOW IN user
+
+                        String artistName = "";
+                        JSONArray artistsArray = trackObject.getJSONArray("artists");
+                        if (artistsArray.length() > 0) {
+                            JSONObject artistObject = artistsArray.getJSONObject(0);
+                            artistName = artistObject.getString("name");
+                        }
+
+                        String trackName = trackObject.getString("name");
+
+                        // Create HTML content for each song box
+                        formattedData.append("<div style=\"display:flex; align-items:center;\">");
+                        formattedData.append("<img src=\"").append(imageUrl).append("\" style=\"width: 200px; height: 200px; margin-right: 10px;\">");
+                        formattedData.append("<div style=\"border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;\">");
+                        formattedData.append("<p>").append(trackName).append(" - ").append(artistName).append("</p>");
+                        formattedData.append("</div>");
+                        formattedData.append("</div>");
                     }
 
-                    runOnUiThread(() -> setTextAsync(user.toString(), profileTextView));
+                    // Display the formatted data with HTML formatting
+                    runOnUiThread(() -> {
+                        profileTextView.setText(Html.fromHtml(formattedData.toString(), Html.FROM_HTML_MODE_COMPACT));
+                        profileTextView.setMovementMethod(LinkMovementMethod.getInstance());
+                    });
                 } catch (IOException | JSONException e) {
-                    Log.d("Error", "Failed to read or parse response: " + e);
+                    Log.e(TAG, "Error processing response: " + e.getMessage());
                     runOnUiThread(() -> Toast.makeText(MainActivity.this, "Failed to process response",
                             Toast.LENGTH_SHORT).show());
                 }
             }
+
+
+
+
+
         });
     }
 
@@ -355,7 +431,9 @@ public class MainActivity extends AppCompatActivity {
         runOnUiThread(() -> Toast.makeText(MainActivity.this, "Failed to fetch data, watch Logcat for more details",
                 Toast.LENGTH_SHORT).show());
     }
-
+    private String formatDuration(int duration) {
+        return String.valueOf(duration);
+    }
     @Override
     protected void onDestroy() {
         cancelCall();
