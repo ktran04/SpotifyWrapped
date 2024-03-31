@@ -59,8 +59,6 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseAnalytics mFirebaseAnalytics;
 
-    private static final String TAG = "MainActivity";
-
     private final OkHttpClient mOkHttpClient = new OkHttpClient();
     private String mAccessToken, mAccessCode, aAccessToken;
     private Call mCall;
@@ -95,6 +93,19 @@ public class MainActivity extends AppCompatActivity {
             onGetUserProfileClicked();
             getToken(2);
              // Call to retrieve top artists
+        });
+
+        // Find the Sign In button by its ID
+        Button signInButton = findViewById(R.id.buttonSignIn);
+
+        // Set an OnClickListener on the Sign In button
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create an Intent to start the SignInActivity
+                Intent signInIntent = new Intent(MainActivity.this, UserLogin.class);
+                startActivity(signInIntent);
+            }
         });
 
 
