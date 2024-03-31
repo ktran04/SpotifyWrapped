@@ -12,17 +12,46 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Project2"
         tools:targetApi="33">
+
+        <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
-                <data android:host="auth" android:scheme="com.example.project2"/>
-
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".UserLogin"
+            android:exported="true">
+            <!-- No specific intent-filter required unless this activity is directly accessed from outside -->
+        </activity>
+
+        <!-- SignInActivity -->
+        <activity
+            android:name=".SignInActivity"
+            android:exported="true">
+            <!-- No specific intent-filter required unless this activity is directly accessed from outside -->
+        </activity>
+
+        <!-- SignUpActivity -->
+        <activity
+            android:name=".SignUpActivity"
+            android:exported="true">
+            <!-- No specific intent-filter required unless this activity is directly accessed from outside -->
+        </activity>
+
+        <!-- UpdateInfo Activity -->
+        <activity
+            android:name=".UpdateInfo"
+            android:exported="true">
+            <!-- No specific intent-filter required unless this activity is directly accessed from outside -->
+        </activity>
+
+        <!-- Other activities and application components -->
+
     </application>
 
 </manifest>
