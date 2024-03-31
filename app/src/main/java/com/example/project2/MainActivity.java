@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseAnalytics mFirebaseAnalytics;
 
-    private static final String TAG = "MainActivity";
+    
 
     private final OkHttpClient mOkHttpClient = new OkHttpClient();
     private String mAccessToken, mAccessCode, aAccessToken;
@@ -406,7 +406,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onFailure(Call call, IOException e) {
-        Log.d("HTTP", "Failed to fetch data: " + e);
+        Log.d("HTTP", "Failed to get data: " + e);
         runOnUiThread(() -> Toast.makeText(MainActivity.this, "Failed to fetch data, watch Logcat for more details",
                 Toast.LENGTH_SHORT).show());
     }
