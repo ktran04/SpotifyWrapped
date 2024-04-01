@@ -1,4 +1,5 @@
 package com.example.project2;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -49,6 +50,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+
 public class MainActivity extends AppCompatActivity {
 
     public static final String CLIENT_ID = "ef598ecfefbc48da953792cd34909460";
@@ -62,8 +64,6 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private FirebaseAuth auth;
     private FirebaseAnalytics mFirebaseAnalytics;
-
-    
 
     private final OkHttpClient mOkHttpClient = new OkHttpClient();
     private String mAccessToken, mAccessCode, aAccessToken;
@@ -92,20 +92,22 @@ public class MainActivity extends AppCompatActivity {
 
         // Set the click listeners for the buttons
         tokenBtn.setOnClickListener((v) -> {
+            Log.d(TAG, "Token Button Clicked");
             getToken(0);
         });
 
         profileBtn.setOnClickListener((v) -> {
+            Log.d(TAG, "Profile Button Clicked");
             onGetUserProfileClicked();
             getToken(2);
             // Call to retrieve top artists
         });
 
-
-
         // Initialize the views
         tokenTextView = (TextView) findViewById(R.id.token_text_view);
 
+        // Log the initialization completion
+        Log.d(TAG, "Activity initialized successfully");
     }
 
 
@@ -116,7 +118,9 @@ public class MainActivity extends AppCompatActivity {
      * https://developer.spotify.com/documentation/general/guides/authorization-guide/
      */
     public void getToken(int code) {
+        Log.d(TAG, "getToken() called with code: " + code);
         final AuthorizationRequest request = getAuthenticationRequest(AuthorizationResponse.Type.TOKEN, code);
+        Log.d(TAG, "AuthorizationRequest created: " + request);
         AuthorizationClient.openLoginActivity(MainActivity.this, code, request);
     }
 
@@ -159,10 +163,37 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Puts spotify token into firestore database
+     * @param token the token from the user
+     */
 
+    private void updateSpotifyTokenInFirestore(String token) {
+        EditText editTextDatabase = findViewById(R.id.editTextDatabase);
+        String username = editTextDatabase.getText().toString();
 
+        if (username.isEmpty()) {
+            Toast.makeText(this, "Username is empty, can't store token.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
+        Map<String, Object> user = new HashMap<>();
+        user.put("user", user);
+        user.put("spotifyToken", token);
 
+        // Update Firestore collection reference
+        db.collection("sample")
+                // Update document reference to "sample1"
+                .document("sample1")
+                .set(user)
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Spotify token successfully stored!"))
+                .addOnFailureListener(e -> Log.w(TAG, "Error storing Spotify token", e));
+
+        Bundle params = new Bundle();
+        params.putString("token_status", "success");
+        mFirebaseAnalytics.logEvent("spotify_token_stored", params);
+
+    }
 
     /**
      * Get user profile
@@ -194,69 +225,27 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-
             public void onResponse(Call call, Response response) throws IOException {
                 try {
-                    String jsonResponse = response.body().string();
-                    Log.d(TAG, "JSON Response: " + jsonResponse);
+                    final String jsonResponse = response.body().string();
+                    Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-                    JSONObject jsonObject = new JSONObject(jsonResponse);
-                    JSONArray itemsArray = jsonObject.getJSONArray("items");
+                    // Parse JSON response into a Java object
+                    UserProfile userProfile = gson.fromJson(jsonResponse, UserProfile.class);
 
-                    StringBuilder formattedData = new StringBuilder();
-
-                    // Add header for top tracks
-                    formattedData.append("<h2>Your top tracks!</h2>");
-
-                    for (int i = 0; i < itemsArray.length(); i++) {
-                        JSONObject trackObject = itemsArray.getJSONObject(i);
-                        JSONObject albumObject = trackObject.getJSONObject("album");
-                        JSONArray imagesArray = albumObject.getJSONArray("images");
-                        String imageUrl = "";
-                        if (imagesArray.length() > 0) {
-                            JSONObject imageObject = imagesArray.getJSONObject(0);
-                            imageUrl = imageObject.getString("url");
-                            Log.d(TAG, "Image URL for track " + i + ": " + imageUrl);
-                        }
-
-                        String artistName = "";
-                        JSONArray artistsArray = trackObject.getJSONArray("artists");
-                        if (artistsArray.length() > 0) {
-                            JSONObject artistObject = artistsArray.getJSONObject(0);
-                            artistName = artistObject.getString("name");
-                        }
-
-                        String trackName = trackObject.getString("name");
-
-                        // Load image using Glide
-                        ImageView imageView = new ImageView(MainActivity.this);
-                        Glide.with(MainActivity.this)
-                                .load(imageUrl)
-                                .into(imageView);
-
-                        // Create HTML content for each song box
-                        formattedData.append("<div style=\"display:flex; align-items:center;\">")
-                                .append("<div style=\"width: 200px; height: 200px; margin-right: 10px;\">")
-                                .append(imageView)
-                                .append("</div>")
-                                .append("<div style=\"border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;\">")
-                                .append("<p>").append(trackName).append(" - ").append(artistName).append("</p>")
-                                .append("</div>")
-                                .append("</div>");
-                    }
-
-                    // Display the formatted data with HTML formatting
-                    runOnUiThread(() -> {
-                        profileTextView.setText(Html.fromHtml(formattedData.toString(), Html.FROM_HTML_MODE_COMPACT));
-                        profileTextView.setMovementMethod(LinkMovementMethod.getInstance());
-                    });
-                } catch (IOException | JSONException e) {
-                    Log.e(TAG, "Error processing response: " + e.getMessage());
-                    runOnUiThread(() -> Toast.makeText(MainActivity.this, "Failed to process response",
-                            Toast.LENGTH_SHORT).show());
+                    // Format the user profile data
+                    String formattedProfile = "User: " + userProfile.display_name + "\n" +
+                            "Followers: " + userProfile.followers.total + "\n" +
+                            "Email: " + userProfile.email;
+                    user.setUsername(userProfile.display_name);
+                    user.setFollowers(userProfile.followers.total);
+                    user.setEmail(userProfile.email);
+                } catch (IOException e) {
+                    Log.d("IO", "Failed to read response: " + e);
+                    Toast.makeText(MainActivity.this, "Failed to read response, watch Logcat for more details",
+                            Toast.LENGTH_SHORT).show();
                 }
             }
-
         });
     }
 
@@ -271,12 +260,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     public void onGetUserTopArtistsClicked(String type) {
-
         mAccessToken = this.mAccessToken;
 
-
         String url = "https://api.spotify.com/v1/me/top/" + type;
-
 
         Request request = new Request.Builder()
                 .url(url)
@@ -294,68 +280,54 @@ public class MainActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT).show());
             }
 
-
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 try {
                     String jsonResponse = response.body().string();
-                    Log.d(TAG, "JSON Response: " + jsonResponse);
-
                     JSONObject jsonObject = new JSONObject(jsonResponse);
                     JSONArray itemsArray = jsonObject.getJSONArray("items");
 
+                    int totalDurationMs = 0;
+
                     StringBuilder formattedData = new StringBuilder();
 
-                    // Add header for top tracks
+
                     formattedData.append("<h2>Your top tracks!</h2>");
 
                     for (int i = 0; i < itemsArray.length(); i++) {
                         JSONObject trackObject = itemsArray.getJSONObject(i);
-                        JSONObject albumObject = trackObject.getJSONObject("album");
-                        JSONArray imagesArray = albumObject.getJSONArray("images");
-                        String imageUrl = "";
-                        if (imagesArray.length() > 0) {
-                            JSONObject imageObject = imagesArray.getJSONObject(0);
-                            imageUrl = imageObject.getString("url");
-                            Log.d(TAG, "Image URL for track " + i + ": " + imageUrl);
-                        }
+                        int durationMs = trackObject.getInt("duration_ms");
 
-                        String artistName = "";
-                        JSONArray artistsArray = trackObject.getJSONArray("artists");
-                        if (artistsArray.length() > 0) {
-                            JSONObject artistObject = artistsArray.getJSONObject(0);
-                            artistName = artistObject.getString("name");
-                        }
+
+                        totalDurationMs += durationMs;
 
                         String trackName = trackObject.getString("name");
 
-                        // Create HTML content for each song box
-                        formattedData.append("<div style=\"display:flex; align-items:center;\">");
-                        formattedData.append("<img src=\"").append(imageUrl).append("\" style=\"width: 200px; height: 200px; margin-right: 10px;\">");
+
                         formattedData.append("<div style=\"border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;\">");
-                        formattedData.append("<p>").append(trackName).append(" - ").append(artistName).append("</p>");
-                        formattedData.append("</div>");
+                        formattedData.append("<p>").append("🎵 ").append(trackName).append("</p>");
                         formattedData.append("</div>");
                     }
 
-                    // Display the formatted data with HTML formatting
+
+                    int totalDurationMinutes = totalDurationMs / 60000;
+
+                    formattedData.append("<p>").append("Total listening time: ").append(totalDurationMinutes).append(" minutes").append("</p>");
+
+
                     runOnUiThread(() -> {
                         profileTextView.setText(Html.fromHtml(formattedData.toString(), Html.FROM_HTML_MODE_COMPACT));
                         profileTextView.setMovementMethod(LinkMovementMethod.getInstance());
                     });
                 } catch (IOException | JSONException e) {
-                    Log.e(TAG, "Error processing response: " + e.getMessage());
+                    Log.d("Error", "Failed to read or parse response: " + e);
                     runOnUiThread(() -> Toast.makeText(MainActivity.this, "Failed to process response",
                             Toast.LENGTH_SHORT).show());
                 }
             }
-
-
-
-
-
         });
     }
+
 
     /**
      * Creates a UI thread to update a TextView in the background
@@ -406,7 +378,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onFailure(Call call, IOException e) {
-        Log.d("HTTP", "Failed to get data: " + e);
+        Log.d("HTTP", "Failed to fetch data: " + e);
         runOnUiThread(() -> Toast.makeText(MainActivity.this, "Failed to fetch data, watch Logcat for more details",
                 Toast.LENGTH_SHORT).show());
     }
@@ -418,4 +390,5 @@ public class MainActivity extends AppCompatActivity {
         cancelCall();
         super.onDestroy();
     }
+
 }

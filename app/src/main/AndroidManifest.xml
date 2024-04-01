@@ -14,15 +14,12 @@
         tools:targetApi="33">
         <activity
             android:name=".MainActivity"
+            android:launchMode="standard"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
-                <data android:host="auth" android:scheme="com.example.project2"/>
-
             </intent-filter>
         </activity>
     </application>
-
 </manifest>
