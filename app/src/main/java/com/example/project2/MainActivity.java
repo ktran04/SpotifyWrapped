@@ -103,6 +103,23 @@ public class MainActivity extends AppCompatActivity {
             // Call to retrieve top artists
         });
 
+
+        // Find the Sign In button by its ID
+        Button signInButton = findViewById(R.id.buttonSignIn);
+
+        // Set an OnClickListener on the Sign In button
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create an Intent to start the SignInActivity
+                Intent signInIntent = new Intent(MainActivity.this, UserLogin.class);
+                startActivity(signInIntent);
+            }
+        });
+
+
+
+
         // Initialize the views
         tokenTextView = (TextView) findViewById(R.id.token_text_view);
 
