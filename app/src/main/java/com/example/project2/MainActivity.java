@@ -41,7 +41,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.Call;
@@ -121,7 +123,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Initialize the views
-        tokenTextView = (TextView) findViewById(R.id.token_text_view);
 
         // Log the initialization completion
         Log.d(TAG, "Activity initialized successfully");
@@ -174,8 +175,7 @@ public class MainActivity extends AppCompatActivity {
             setTextAsync(mAccessCode, codeTextView);
         } else if (TOP_ARTIST_REQUEST_CODE == requestCode) {
             aAccessToken = response.getAccessToken();
-            onGetUserTopArtistsClicked("artists");
-            onGetUserTopArtistsClicked("tracks");
+            onGetUserTopArtistsClicked();
         }
 
     }
@@ -276,10 +276,10 @@ public class MainActivity extends AppCompatActivity {
             int total;
         }
     }
-    public void onGetUserTopArtistsClicked(String type) {
+    public void onGetUserTopArtistsClicked() {
         mAccessToken = this.mAccessToken;
 
-        String url = "https://api.spotify.com/v1/me/top/" + type;
+        String url = "https://api.spotify.com/v1/me/top/tracks";
 
         Request request = new Request.Builder()
                 .url(url)
@@ -306,16 +306,20 @@ public class MainActivity extends AppCompatActivity {
 
                     int totalDurationMs = 0;
 
+                    String username = user.getUsername(); // This is the username
+
                     StringBuilder formattedData = new StringBuilder();
 
-
                     formattedData.append("<h2>Your top tracks!</h2>");
+
+                    Map<String, Integer> artistCounts = new HashMap<>(); // Will be full after for loop
+                    Map<String, Integer> genreCounts = new HashMap<>(); // Will be full after for loop
 
                     for (int i = 0; i < itemsArray.length(); i++) {
                         JSONObject trackObject = itemsArray.getJSONObject(i);
                         int durationMs = trackObject.getInt("duration_ms");
 
-
+                        addArtistAndGenreData(trackObject, artistCounts, genreCounts);
                         totalDurationMs += durationMs;
 
                         String trackName = trackObject.getString("name");
@@ -326,6 +330,8 @@ public class MainActivity extends AppCompatActivity {
                         formattedData.append("</div>");
                     }
 
+                    List<String> sortedArtists = sortedList(artistCounts); // Sorted by how much they listen to them. sortedArtists.get(0) = Artist they listen to most
+                    List<String> sortedGenres = sortedList(genreCounts); // Sorted by how much they listen to that genre. Sorted same way as sorted artists
 
                     int totalDurationMinutes = totalDurationMs / 60000;
 
@@ -343,6 +349,40 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private static void addArtistAndGenreData(JSONObject track, Map<String, Integer> artistCounts, Map<String, Integer> genreCounts) throws JSONException {
+        JSONArray artists = track.getJSONArray("artists");
+        for (int i = 0; i < artists.length(); i++) {
+            JSONObject artist = artists.getJSONObject(i);
+            increment(artist.getString("name"), artistCounts);
+            String[] genres = (String[]) artist.get("genres");
+            for (String genre : genres) {
+                increment(genre, genreCounts);
+            }
+        }
+    }
+
+    private static void increment(String key, Map<String, Integer> map) {
+        map.putIfAbsent(key, 0);
+        map.put(key, map.get(key) + 1);
+    }
+
+    private static List<String> sortedList(Map<String, Integer> map) {
+        List<String> out = new ArrayList<>();
+        for (String key : map.keySet()) {
+            out.add(key);
+            for (int i = out.size() - 1; i > 0 && map.get(out.get(i)) < map.get(out.get(i - 1)); i--) {
+                swap(out, i, i - 1);
+            }
+        }
+        return out;
+    }
+
+    private static void swap(List<String> list, int i, int j) {
+        String si = list.get(i);
+        list.set(i, list.get(j));
+        list.set(j, si);
     }
 
 

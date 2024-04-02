@@ -10,34 +10,36 @@
     tools:context=".MainActivity">
 
     <!-- Title TextView -->
-    <TextView
-        android:id="@+id/title_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Your Spotify Summary"
-        android:textSize="24sp"
-        android:textColor="@color/black"
-        android:layout_marginTop="32dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"/>
 
     <!-- Token TextView -->
+    <TextView
+        android:id="@+id/title_text_view"
+        android:layout_width="369dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="16dp"
+        android:text="Click Below To Generate Your Spotify Summary"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/token_text_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Token:"
-        android:textSize="16sp"
-        android:textColor="@color/dark_gray"
-        android:layout_marginTop="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        app:layout_constraintTop_toBottomOf="@id/title_text_view"/>
+        android:textColor="@color/dark_gray"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_text_view" />
 
     <!-- Get User Data Button -->
     <Button
@@ -75,40 +77,44 @@
         android:text="Login to Spotify Wrapped" />
 
     <!-- ScrollView for Response TextView -->
+
+    <!-- Get User Profile Button -->
+
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/token_btn"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="160dp"
+        app:layout_constraintBottom_toTopOf="@id/profile_btn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/profile_btn">
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/token_btn"
+        app:layout_constraintVertical_bias="0.731">
 
         <!-- Response TextView -->
         <TextView
             android:id="@+id/response_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="@color/black"
             android:padding="16dp"
-            tools:text="Line 1\nLine 2\nLine 3"/>
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            tools:text="Line 1\nLine 2\nLine 3" />
     </ScrollView>
 
-    <!-- Get User Profile Button -->
     <Button
         android:id="@+id/profile_btn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Get User Profile"
-        android:textColor="@android:color/white"
-        android:background="@color/primary_color"
-        android:layout_marginTop="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="380dp"
+        android:layout_height="2dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        android:background="@color/primary_color"
+        android:text="Get User Profile"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/image_view"
