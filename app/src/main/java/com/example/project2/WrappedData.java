@@ -9,7 +9,13 @@ public class WrappedData {
     private String email;
     private List<String> topTracks;
     private List<String> topArtists;
-    private int listeningTime;
+    private int listeningTimeMS;
+
+    private List<String> topGenres;
+
+    public void setTopGenres(List<String> topGenres) {
+        this.topGenres = topGenres;
+    }
 
     public WrappedData() {
         topTracks = new ArrayList<>();
@@ -37,7 +43,7 @@ public class WrappedData {
     }
 
     public void addTime(int time) {
-        listeningTime += time;
+        listeningTimeMS += time;
     }
 
     @Override
@@ -52,12 +58,28 @@ public class WrappedData {
         for (String s : topArtists) {
             out.append('\t').append(s).append('\n');
         }
-        out.append("Listening Time: ").append(listeningTime).append(" Seconds");
+        out.append("Listening Time: ").append(listeningTimeMS).append(" Seconds");
         return out.toString();
     }
 
     public int getTotalTime() {
-        return listeningTime;
+        return listeningTimeMS;
+    }
+
+    public int getListeningTimeMS() {
+        return listeningTimeMS;
+    }
+
+    public List<String> getTopGenres() {
+        return topGenres;
+    }
+
+    public List<String> getTopArtists() {
+        return topArtists;
+    }
+
+    public List<String> getTopTracks() {
+        return topTracks;
     }
 
     public List<String> getTracks() {

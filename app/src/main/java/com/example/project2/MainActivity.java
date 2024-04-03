@@ -36,6 +36,7 @@ import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
 
+import org.checkerframework.checker.units.qual.C;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -175,7 +176,10 @@ public class MainActivity extends AppCompatActivity {
             setTextAsync(mAccessCode, codeTextView);
         } else if (TOP_ARTIST_REQUEST_CODE == requestCode) {
             aAccessToken = response.getAccessToken();
-            onGetUserTopArtistsClicked();
+            onGetUserTopArtistsClicked("tracks");
+        } else {
+            aAccessToken = response.getAccessToken();
+            onGetUserTopArtistsClicked("artists");
         }
 
     }
@@ -246,17 +250,13 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     final String jsonResponse = response.body().string();
                     Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-                    // Parse JSON response into a Java object
                     UserProfile userProfile = gson.fromJson(jsonResponse, UserProfile.class);
 
                     // Format the user profile data
-                    String formattedProfile = "User: " + userProfile.display_name + "\n" +
-                            "Followers: " + userProfile.followers.total + "\n" +
-                            "Email: " + userProfile.email;
                     user.setUsername(userProfile.display_name);
                     user.setFollowers(userProfile.followers.total);
                     user.setEmail(userProfile.email);
+                    // Parse JSON response into a Java object
                 } catch (IOException e) {
                     Log.d("IO", "Failed to read response: " + e);
                     Toast.makeText(MainActivity.this, "Failed to read response, watch Logcat for more details",
@@ -266,7 +266,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // Define a class to represent user profile data
     class UserProfile {
         String display_name;
         Followers followers;
@@ -276,10 +275,15 @@ public class MainActivity extends AppCompatActivity {
             int total;
         }
     }
-    public void onGetUserTopArtistsClicked() {
-        mAccessToken = this.mAccessToken;
 
-        String url = "https://api.spotify.com/v1/me/top/tracks";
+    // Define a class to represent user profile data
+    public void onGetUserTopArtistsClicked(String type) {
+        String url;
+        if (type.equals("tracks")) {
+            url = "https://api.spotify.com/v1/me/top/tracks";
+        } else {
+            url = "https://api.spotify.com/v1/me/top/artists";
+        }
 
         Request request = new Request.Builder()
                 .url(url)
@@ -292,7 +296,7 @@ public class MainActivity extends AppCompatActivity {
         mCall.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.d("HTTP", "Failed to fetch data: " + e);
+                Log.d("HTTP", "Failed to fetch data: " + type);
                 runOnUiThread(() -> Toast.makeText(MainActivity.this, "Failed to fetch data, watch Logcat for more details",
                         Toast.LENGTH_SHORT).show());
             }
@@ -303,14 +307,31 @@ public class MainActivity extends AppCompatActivity {
                     String jsonResponse = response.body().string();
                     JSONObject jsonObject = new JSONObject(jsonResponse);
                     JSONArray itemsArray = jsonObject.getJSONArray("items");
-
+                    if (type.equals("tracks")) {
+                        for (int i = 0; i < itemsArray.length(); i++) {
+                            user.addTrack(itemsArray.getJSONObject(i).getString("name"));
+                            user.addTime(itemsArray.getJSONObject(i).getInt("duration_ms"));
+                        }
+                    } else {
+                        Map<String, Integer> genreCounts = new HashMap<>();
+                        for (int i = 0; i < itemsArray.length(); i++) {
+                            user.addArtist(itemsArray.getJSONObject(i).getString("name"));
+                            JSONArray genres = itemsArray.getJSONObject(i).getJSONArray("genres");
+                            for (int j = 0; j < genres.length(); j++) {
+                                increment(genres.getString(j), genreCounts);
+                            }
+                        }
+                        Log.d("Error", genreCounts.toString());
+                        user.setTopGenres(sortedList(genreCounts));
+                    }
+                    /**
                     int totalDurationMs = 0;
 
                     String username = user.getUsername(); // This is the username
 
-                    StringBuilder formattedData = new StringBuilder();
+                    // StringBuilder formattedData = new StringBuilder();
 
-                    formattedData.append("<h2>Your top tracks!</h2>");
+                    // formattedData.append("<h2>Your top tracks!</h2>");
 
                     Map<String, Integer> artistCounts = new HashMap<>(); // Will be full after for loop
                     Map<String, Integer> genreCounts = new HashMap<>(); // Will be full after for loop
@@ -319,29 +340,27 @@ public class MainActivity extends AppCompatActivity {
                         JSONObject trackObject = itemsArray.getJSONObject(i);
                         int durationMs = trackObject.getInt("duration_ms");
 
-                        addArtistAndGenreData(trackObject, artistCounts, genreCounts);
                         totalDurationMs += durationMs;
 
                         String trackName = trackObject.getString("name");
 
 
-                        formattedData.append("<div style=\"border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;\">");
-                        formattedData.append("<p>").append("🎵 ").append(trackName).append("</p>");
-                        formattedData.append("</div>");
+                        // formattedData.append("<div style=\"border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;\">");
+                        // formattedData.append("<p>").append("🎵 ").append(trackName).append("</p>");
+                        // formattedData.append("</div>");
                     }
 
                     List<String> sortedArtists = sortedList(artistCounts); // Sorted by how much they listen to them. sortedArtists.get(0) = Artist they listen to most
                     List<String> sortedGenres = sortedList(genreCounts); // Sorted by how much they listen to that genre. Sorted same way as sorted artists
-
+                    Log.d("Error", "1");
                     int totalDurationMinutes = totalDurationMs / 60000;
-
-                    formattedData.append("<p>").append("Total listening time: ").append(totalDurationMinutes).append(" minutes").append("</p>");
-
-
+*/
+                    // formattedData.append("<p>").append("Total listening time: ").append(totalDurationMinutes).append(" minutes").append("</p>");
+/**
                     runOnUiThread(() -> {
                         profileTextView.setText(Html.fromHtml(formattedData.toString(), Html.FROM_HTML_MODE_COMPACT));
                         profileTextView.setMovementMethod(LinkMovementMethod.getInstance());
-                    });
+                    }); */
                 } catch (IOException | JSONException e) {
                     Log.d("Error", "Failed to read or parse response: " + e);
                     runOnUiThread(() -> Toast.makeText(MainActivity.this, "Failed to process response",
@@ -349,37 +368,47 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    private static void addArtistAndGenreData(JSONObject track, Map<String, Integer> artistCounts, Map<String, Integer> genreCounts) throws JSONException {
-        JSONArray artists = track.getJSONArray("artists");
-        for (int i = 0; i < artists.length(); i++) {
-            JSONObject artist = artists.getJSONObject(i);
-            increment(artist.getString("name"), artistCounts);
-            String[] genres = (String[]) artist.get("genres");
-            for (String genre : genres) {
-                increment(genre, genreCounts);
+        if (type.equals("tracks")) {
+            getToken(3);
+        } else if (type.equals("artists")){
+            while (user.getTopGenres() == null) {
+                continue;
             }
+            Log.d("Error", user.getUsername());
+            Log.d("Error", user.getTopArtists().toString());
+            Log.d("Error", user.getTopTracks().toString());
+            Log.d("Error", user.getTopGenres().toString());
+            displayWrappedData(user);
         }
     }
 
-    private static void increment(String key, Map<String, Integer> map) {
+    private void displayWrappedData(WrappedData user) {
+        String username = user.getUsername();
+        List<String> topTracks = user.getTopTracks(); // sorted top -> bottom
+        List<String> topArtists = user.getTopArtists(); // ^^
+        List<String> topGenres = user.getTopGenres(); // ^^
+        // PLEASE FORMAT THE DATA AND DISPLAY IT HERE
+    }
+
+
+
+    private void increment(String key, Map<String, Integer> map) {
         map.putIfAbsent(key, 0);
         map.put(key, map.get(key) + 1);
     }
 
-    private static List<String> sortedList(Map<String, Integer> map) {
+    private List<String> sortedList(Map<String, Integer> map) {
         List<String> out = new ArrayList<>();
         for (String key : map.keySet()) {
             out.add(key);
-            for (int i = out.size() - 1; i > 0 && map.get(out.get(i)) < map.get(out.get(i - 1)); i--) {
+            for (int i = out.size() - 1; i > 0 && map.get(out.get(i)) > map.get(out.get(i - 1)); i--) {
                 swap(out, i, i - 1);
             }
         }
         return out;
     }
 
-    private static void swap(List<String> list, int i, int j) {
+    private void swap(List<String> list, int i, int j) {
         String si = list.get(i);
         list.set(i, list.get(j));
         list.set(j, si);
