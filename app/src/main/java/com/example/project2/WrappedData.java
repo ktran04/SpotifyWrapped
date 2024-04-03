@@ -63,4 +63,8 @@ public class WrappedData {
     public List<String> getTracks() {
         return topTracks;
     }
+
+    public String getUsername() {
+        return username;
+    }
 }
