@@ -50,6 +50,18 @@
             <!-- No specific intent-filter required unless this activity is directly accessed from outside -->
         </activity>
 
+        <activity
+            android:name=".MainPage"
+            android:exported="true">
+            <!-- No specific intent-filter required unless this activity is directly accessed from outside -->
+        </activity>
+
+        <activity
+            android:name=".DeleteAccount"
+            android:exported="true">
+            <!-- No specific intent-filter required unless this activity is directly accessed from outside -->
+        </activity>
+
         <!-- Other activities and application components -->
 
     </application>
