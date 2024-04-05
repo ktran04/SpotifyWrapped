@@ -6,7 +6,8 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@drawable/img"
+
     tools:context=".MainActivity">
 
     <!-- Title TextView -->
@@ -91,7 +92,9 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/token_btn"
-        app:layout_constraintVertical_bias="0.731">
+        app:layout_constraintVertical_bias="0.731"
+        tools:ignore="ExtraText">
+
 
         <!-- Response TextView -->
         <TextView

@@ -2,11 +2,23 @@ package com.example.project2;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.content.Intent;
+import java.util.Random;
 import android.net.Uri;
 import android.text.Html;
+import android.text.Layout;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
+import android.text.style.AlignmentSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
+import android.text.style.TypefaceSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -382,13 +394,98 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     private void displayWrappedData(WrappedData user) {
         String username = user.getUsername();
-        List<String> topTracks = user.getTopTracks(); // sorted top -> bottom
-        List<String> topArtists = user.getTopArtists(); // ^^
-        List<String> topGenres = user.getTopGenres(); // ^^
-        // PLEASE FORMAT THE DATA AND DISPLAY IT HERE
+        List<String> topTracks = user.getTopTracks();
+        List<String> topArtists = user.getTopArtists();
+        List<String> topGenres = user.getTopGenres();
+
+        Random random = new Random();
+
+        // Create a SpannableStringBuilder to apply styling and color
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+
+        // Welcome message with the username in bubble font and centered
+        SpannableString welcomeMessage = new SpannableString("Welcome: " + username + "\n");
+        welcomeMessage.setSpan(new ForegroundColorSpan(Color.parseColor("#FFFFFF")), 0, welcomeMessage.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        welcomeMessage.setSpan(new RelativeSizeSpan(2.5f), 0, welcomeMessage.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        welcomeMessage.setSpan(new StyleSpan(Typeface.BOLD), 0, welcomeMessage.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        welcomeMessage.setSpan(new TypefaceSpan("cursive"), 0, welcomeMessage.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        welcomeMessage.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), 0, welcomeMessage.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        builder.append(welcomeMessage);
+        // Set font size and color for section headers
+        int sectionHeaderSize = 24; // Adjust the size as needed
+        SpannableString tracksTitle = new SpannableString("Your Top Tracks:\n");
+        tracksTitle.setSpan(new ForegroundColorSpan(Color.parseColor("#FFFFFF")), 0, tracksTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        tracksTitle.setSpan(new RelativeSizeSpan(1.5f), 0, tracksTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        tracksTitle.setSpan(new StyleSpan(Typeface.BOLD), 0, tracksTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        builder.append(tracksTitle);
+
+        // Append top tracks with larger font size, bold, and emoji
+        for (String track : topTracks) {
+            SpannableString trackSpannable = new SpannableString("🎵 " + track + "\n");
+            trackSpannable.setSpan(new StyleSpan(Typeface.BOLD), 0, trackSpannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            trackSpannable.setSpan(new RelativeSizeSpan(1.2f), 0, trackSpannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            trackSpannable.setSpan(new ForegroundColorSpan(Color.parseColor("#FFFFFF")), 0, trackSpannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            builder.append(trackSpannable);
+        }
+
+        builder.append("\n"); // Add space between sections
+
+        SpannableString artistsTitle = new SpannableString("Your Top Artists:\n");
+        artistsTitle.setSpan(new ForegroundColorSpan(Color.parseColor("#FFFFFF")), 0, artistsTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        artistsTitle.setSpan(new RelativeSizeSpan(1.5f), 0, artistsTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        artistsTitle.setSpan(new StyleSpan(Typeface.BOLD), 0, artistsTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        builder.append(artistsTitle);
+
+        // Append top artists with larger font size, bold, and emoji
+        for (String artist : topArtists) {
+            SpannableString artistSpannable = new SpannableString("🎤 " + artist + "\n");
+            artistSpannable.setSpan(new StyleSpan(Typeface.BOLD), 0, artistSpannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            artistSpannable.setSpan(new RelativeSizeSpan(1.2f), 0, artistSpannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            artistSpannable.setSpan(new ForegroundColorSpan(Color.parseColor("#FFFFFF")), 0, artistSpannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            builder.append(artistSpannable);
+        }
+
+        builder.append("\n"); // Add space between sections
+
+        SpannableString genresTitle = new SpannableString("Your Top Genres:\n");
+        genresTitle.setSpan(new ForegroundColorSpan(Color.parseColor("#FFFFFF")), 0, genresTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        genresTitle.setSpan(new RelativeSizeSpan(1.5f), 0, genresTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        genresTitle.setSpan(new StyleSpan(Typeface.BOLD), 0, genresTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        builder.append(genresTitle);
+
+        // Append top genres with larger font size, bold, and emoji
+        for (String genre : topGenres) {
+            SpannableString genreSpannable = new SpannableString("🎶 " + genre + "\n");
+            genreSpannable.setSpan(new StyleSpan(Typeface.BOLD), 0, genreSpannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            genreSpannable.setSpan(new RelativeSizeSpan(1.2f), 0, genreSpannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            genreSpannable.setSpan(new ForegroundColorSpan(Color.parseColor("#FFFFFF")), 0, genreSpannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            builder.append(genreSpannable);
+        }
+
+        builder.append("\n"); // Add space between sections
+
+        int totalDurationMinutes = user.getListeningTimeMS() / 60000;
+        SpannableString totalListeningTimeTitle = new SpannableString("Total Listening Time:\n");
+        totalListeningTimeTitle.setSpan(new ForegroundColorSpan(Color.parseColor("#FFFFFF")), 0, totalListeningTimeTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        totalListeningTimeTitle.setSpan(new RelativeSizeSpan(1.5f), 0, totalListeningTimeTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        totalListeningTimeTitle.setSpan(new StyleSpan(Typeface.BOLD), 0, totalListeningTimeTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        builder.append(totalListeningTimeTitle);
+
+        // Append total listening time with larger font size, bold
+        SpannableString totalListeningTime = new SpannableString(totalDurationMinutes + " minutes\n");
+        totalListeningTime.setSpan(new StyleSpan(Typeface.BOLD), 0, totalListeningTime.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        totalListeningTime.setSpan(new RelativeSizeSpan(1.2f), 0, totalListeningTime.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        totalListeningTime.setSpan(new ForegroundColorSpan(Color.parseColor("#FFFFFF")), 0, totalListeningTime.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        builder.append(totalListeningTime);
+
+        // Set the formatted text to the TextView
+        profileTextView.setText(builder);
     }
+
+
 
 
 
