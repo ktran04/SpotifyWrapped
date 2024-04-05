@@ -15,6 +15,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class SignInActivity extends AppCompatActivity {
     private FirebaseAuth auth;
+
     private static final String TAG = "SignInActivity";
 
     @Override
@@ -33,15 +34,24 @@ public class SignInActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
-                            Intent myIntent = new Intent(SignInActivity.this, MainActivity.class); // change to Spotify Wrapped screen
+                            Intent myIntent = new Intent(SignInActivity.this, MainActivity.class); //should take us to main page MainPage.java
                             startActivity(myIntent);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(SignInActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SignInActivity.this, "Please enter the correct email and password.", Toast.LENGTH_SHORT).show();
                         }
                     });
         });
+
+        // Add logic for the back button
+        Button backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(view -> {
+            Intent intent = new Intent(SignInActivity.this, UserLogin.class);
+            startActivity(intent);
+            finish();
+        });
     }
 }
+
 
