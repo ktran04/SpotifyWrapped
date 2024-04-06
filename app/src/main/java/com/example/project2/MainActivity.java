@@ -41,6 +41,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import com.google.firebase.firestore.SetOptions;
@@ -78,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private FirebaseFirestore db;
     private FirebaseAuth auth;
+    private RecyclerView trackRecyclerView;
     private FirebaseAnalytics mFirebaseAnalytics;
 
     private final OkHttpClient mOkHttpClient = new OkHttpClient();
@@ -87,6 +91,11 @@ public class MainActivity extends AppCompatActivity {
     private TextView tokenTextView, codeTextView, profileTextView;
 
     private WrappedData user;
+    private RecyclerView topTracksRecyclerView;
+    private RecyclerView topArtistsRecyclerView;
+    private TopTracksAdapter topTracksAdapter;
+    private TopGenresAdapter topGenresAdapter;
+    private RecyclerView topGenresRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +114,27 @@ public class MainActivity extends AppCompatActivity {
         Button tokenBtn = (Button) findViewById(R.id.token_btn);
         Button profileBtn = (Button) findViewById(R.id.profile_btn);
 
+        topGenresRecyclerView = findViewById(R.id.top_genres_recycler_view);
+        LinearLayoutManager genreLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        topGenresRecyclerView.setLayoutManager(genreLayoutManager);
+        TopGenresAdapter genreAdapter = new TopGenresAdapter(new ArrayList<>());
+        topGenresRecyclerView.setAdapter(genreAdapter);
+
+        topArtistsRecyclerView = findViewById(R.id.top_artists_recycler_view);
+        LinearLayoutManager artistLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+
+        trackRecyclerView = findViewById(R.id.trackRecyclerView);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        trackRecyclerView.setLayoutManager(layoutManager);
+        topArtistsRecyclerView.setLayoutManager(artistLayoutManager);
+        TopArtistsAdapter artistsAdapter = new TopArtistsAdapter(this, new ArrayList<>()); // Pass empty list initially
+        topArtistsRecyclerView.setAdapter(artistsAdapter);
+
+
+        // Set up adapter
+        TopTracksAdapter trackAdapter; // Pass empty list initially
+        trackAdapter = new TopTracksAdapter(new ArrayList<>());
+        trackRecyclerView.setAdapter(trackAdapter);
         // Set the click listeners for the buttons
         tokenBtn.setOnClickListener((v) -> {
             Log.d(TAG, "Token Button Clicked");
@@ -290,6 +320,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Define a class to represent user profile data
     public void onGetUserTopArtistsClicked(String type) {
+        Log.d(TAG, "Get user top artists clicked");
         String url;
         if (type.equals("tracks")) {
             url = "https://api.spotify.com/v1/me/top/tracks";
@@ -400,89 +431,36 @@ public class MainActivity extends AppCompatActivity {
         List<String> topTracks = user.getTopTracks();
         List<String> topArtists = user.getTopArtists();
         List<String> topGenres = user.getTopGenres();
+        int totalListeningTimeMinutes = user.getListeningTimeMS() / 60000;
 
-        Random random = new Random();
+        // Set the username
+        TextView usernameTextView = findViewById(R.id.username_text_view);
+        usernameTextView.setText("                   Welcome: " + username);
 
-        // Create a SpannableStringBuilder to apply styling and color
-        SpannableStringBuilder builder = new SpannableStringBuilder();
+        // Set the top artists using RecyclerView
+        RecyclerView topArtistsRecyclerView = findViewById(R.id.top_artists_recycler_view);
+        LinearLayoutManager artistLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        topArtistsRecyclerView.setLayoutManager(artistLayoutManager);
+        TopArtistsAdapter artistsAdapter = new TopArtistsAdapter(this, topArtists);
+        topArtistsRecyclerView.setAdapter(artistsAdapter);
 
-        // Welcome message with the username in bubble font and centered
-        SpannableString welcomeMessage = new SpannableString("Welcome: " + username + "\n");
-        welcomeMessage.setSpan(new ForegroundColorSpan(Color.parseColor("#FFFFFF")), 0, welcomeMessage.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        welcomeMessage.setSpan(new RelativeSizeSpan(2.5f), 0, welcomeMessage.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        welcomeMessage.setSpan(new StyleSpan(Typeface.BOLD), 0, welcomeMessage.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        welcomeMessage.setSpan(new TypefaceSpan("cursive"), 0, welcomeMessage.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        welcomeMessage.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), 0, welcomeMessage.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        builder.append(welcomeMessage);
-        // Set font size and color for section headers
-        int sectionHeaderSize = 24; // Adjust the size as needed
-        SpannableString tracksTitle = new SpannableString("Your Top Tracks:\n");
-        tracksTitle.setSpan(new ForegroundColorSpan(Color.parseColor("#FFFFFF")), 0, tracksTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        tracksTitle.setSpan(new RelativeSizeSpan(1.5f), 0, tracksTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        tracksTitle.setSpan(new StyleSpan(Typeface.BOLD), 0, tracksTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        builder.append(tracksTitle);
+        // Set the top genres using RecyclerView
+        RecyclerView topGenresRecyclerView = findViewById(R.id.top_genres_recycler_view);
+        LinearLayoutManager genresLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        topGenresRecyclerView.setLayoutManager(genresLayoutManager);
+        TopGenresAdapter genresAdapter = new TopGenresAdapter(topGenres);
+        topGenresRecyclerView.setAdapter(genresAdapter);
 
-        // Append top tracks with larger font size, bold, and emoji
-        for (String track : topTracks) {
-            SpannableString trackSpannable = new SpannableString("🎵 " + track + "\n");
-            trackSpannable.setSpan(new StyleSpan(Typeface.BOLD), 0, trackSpannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            trackSpannable.setSpan(new RelativeSizeSpan(1.2f), 0, trackSpannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            trackSpannable.setSpan(new ForegroundColorSpan(Color.parseColor("#FFFFFF")), 0, trackSpannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            builder.append(trackSpannable);
-        }
+        // Set the total listening time
+        TextView listeningTimeTextView = findViewById(R.id.listening_time_text_view);
+        listeningTimeTextView.setText("            Total Listening Time: " + totalListeningTimeMinutes + " minutes");
 
-        builder.append("\n"); // Add space between sections
-
-        SpannableString artistsTitle = new SpannableString("Your Top Artists:\n");
-        artistsTitle.setSpan(new ForegroundColorSpan(Color.parseColor("#FFFFFF")), 0, artistsTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        artistsTitle.setSpan(new RelativeSizeSpan(1.5f), 0, artistsTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        artistsTitle.setSpan(new StyleSpan(Typeface.BOLD), 0, artistsTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        builder.append(artistsTitle);
-
-        // Append top artists with larger font size, bold, and emoji
-        for (String artist : topArtists) {
-            SpannableString artistSpannable = new SpannableString("🎤 " + artist + "\n");
-            artistSpannable.setSpan(new StyleSpan(Typeface.BOLD), 0, artistSpannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            artistSpannable.setSpan(new RelativeSizeSpan(1.2f), 0, artistSpannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            artistSpannable.setSpan(new ForegroundColorSpan(Color.parseColor("#FFFFFF")), 0, artistSpannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            builder.append(artistSpannable);
-        }
-
-        builder.append("\n"); // Add space between sections
-
-        SpannableString genresTitle = new SpannableString("Your Top Genres:\n");
-        genresTitle.setSpan(new ForegroundColorSpan(Color.parseColor("#FFFFFF")), 0, genresTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        genresTitle.setSpan(new RelativeSizeSpan(1.5f), 0, genresTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        genresTitle.setSpan(new StyleSpan(Typeface.BOLD), 0, genresTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        builder.append(genresTitle);
-
-        // Append top genres with larger font size, bold, and emoji
-        for (String genre : topGenres) {
-            SpannableString genreSpannable = new SpannableString("🎶 " + genre + "\n");
-            genreSpannable.setSpan(new StyleSpan(Typeface.BOLD), 0, genreSpannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            genreSpannable.setSpan(new RelativeSizeSpan(1.2f), 0, genreSpannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            genreSpannable.setSpan(new ForegroundColorSpan(Color.parseColor("#FFFFFF")), 0, genreSpannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            builder.append(genreSpannable);
-        }
-
-        builder.append("\n"); // Add space between sections
-
-        int totalDurationMinutes = user.getListeningTimeMS() / 60000;
-        SpannableString totalListeningTimeTitle = new SpannableString("Total Listening Time:\n");
-        totalListeningTimeTitle.setSpan(new ForegroundColorSpan(Color.parseColor("#FFFFFF")), 0, totalListeningTimeTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        totalListeningTimeTitle.setSpan(new RelativeSizeSpan(1.5f), 0, totalListeningTimeTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        totalListeningTimeTitle.setSpan(new StyleSpan(Typeface.BOLD), 0, totalListeningTimeTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        builder.append(totalListeningTimeTitle);
-
-        // Append total listening time with larger font size, bold
-        SpannableString totalListeningTime = new SpannableString(totalDurationMinutes + " minutes\n");
-        totalListeningTime.setSpan(new StyleSpan(Typeface.BOLD), 0, totalListeningTime.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        totalListeningTime.setSpan(new RelativeSizeSpan(1.2f), 0, totalListeningTime.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        totalListeningTime.setSpan(new ForegroundColorSpan(Color.parseColor("#FFFFFF")), 0, totalListeningTime.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        builder.append(totalListeningTime);
-
-        // Set the formatted text to the TextView
-        profileTextView.setText(builder);
+        // Set the top tracks using RecyclerView
+        RecyclerView topTracksRecyclerView = findViewById(R.id.top_tracks_recycler_view);
+        LinearLayoutManager trackLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        topTracksRecyclerView.setLayoutManager(trackLayoutManager);
+        TopTracksAdapter trackAdapter = new TopTracksAdapter(topTracks);
+        topTracksRecyclerView.setAdapter(trackAdapter);
     }
 
 
