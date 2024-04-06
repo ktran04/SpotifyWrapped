@@ -21,8 +21,11 @@ import android.text.style.StyleSpan;
 import android.text.style.TypefaceSpan;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
@@ -97,11 +100,32 @@ public class MainActivity extends AppCompatActivity {
     private TopGenresAdapter topGenresAdapter;
     private RecyclerView topGenresRecyclerView;
 
+    private int spinnerPosition;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        user = new WrappedData();
+        spinnerPosition = 0;
+
+
+        Spinner spinner = findViewById(R.id.spinner);
+        String[] stuff = new String[]{"Month", "Half Year", "Year"};
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, stuff);
+        spinner.setAdapter(spinnerAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                spinnerPosition = position;
+                Log.d("Error", "" + spinnerPosition);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                spinnerPosition = spinnerPosition;
+                Log.d("Error", "" + spinnerPosition);
+            }
+        });
 
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -112,7 +136,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize the buttons
         Button tokenBtn = (Button) findViewById(R.id.token_btn);
-        Button profileBtn = (Button) findViewById(R.id.profile_btn);
 
         topGenresRecyclerView = findViewById(R.id.top_genres_recycler_view);
         LinearLayoutManager genreLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
@@ -138,14 +161,19 @@ public class MainActivity extends AppCompatActivity {
         // Set the click listeners for the buttons
         tokenBtn.setOnClickListener((v) -> {
             Log.d(TAG, "Token Button Clicked");
+            user = new WrappedData();
             getToken(0);
         });
 
-        profileBtn.setOnClickListener((v) -> {
-            Log.d(TAG, "Profile Button Clicked");
-            onGetUserProfileClicked();
-            getToken(2);
-            // Call to retrieve top artists
+        Button back = findViewById(R.id.back_btn);
+
+        back.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent backToHome = new Intent(MainActivity.this, MainPage.class);
+                startActivity(backToHome);
+            }
         });
 
 
@@ -210,18 +238,18 @@ public class MainActivity extends AppCompatActivity {
         if (AUTH_TOKEN_REQUEST_CODE == requestCode) {
             mAccessToken = response.getAccessToken();
             // updateSpotifyTokenInFirestore(mAccessToken);
-            Button profileBtn = (Button) findViewById(R.id.profile_btn);
-            profileBtn.performClick();
+            onGetUserProfileClicked();
+            getToken(2);
 
         } else if (AUTH_CODE_REQUEST_CODE == requestCode) {
             mAccessCode = response.getCode();
             setTextAsync(mAccessCode, codeTextView);
         } else if (TOP_ARTIST_REQUEST_CODE == requestCode) {
             aAccessToken = response.getAccessToken();
-            onGetUserTopArtistsClicked("tracks");
+            parseTopData("tracks");
         } else {
             aAccessToken = response.getAccessToken();
-            onGetUserTopArtistsClicked("artists");
+            parseTopData("artists");
         }
 
     }
@@ -319,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Define a class to represent user profile data
-    public void onGetUserTopArtistsClicked(String type) {
+    public void parseTopData(String type) {
         Log.d(TAG, "Get user top artists clicked");
         String url;
         if (type.equals("tracks")) {
@@ -327,6 +355,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             url = "https://api.spotify.com/v1/me/top/artists";
         }
+        url += range();
 
         Request request = new Request.Builder()
                 .url(url)
@@ -367,43 +396,6 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("Error", genreCounts.toString());
                         user.setTopGenres(sortedList(genreCounts));
                     }
-                    /**
-                    int totalDurationMs = 0;
-
-                    String username = user.getUsername(); // This is the username
-
-                    // StringBuilder formattedData = new StringBuilder();
-
-                    // formattedData.append("<h2>Your top tracks!</h2>");
-
-                    Map<String, Integer> artistCounts = new HashMap<>(); // Will be full after for loop
-                    Map<String, Integer> genreCounts = new HashMap<>(); // Will be full after for loop
-
-                    for (int i = 0; i < itemsArray.length(); i++) {
-                        JSONObject trackObject = itemsArray.getJSONObject(i);
-                        int durationMs = trackObject.getInt("duration_ms");
-
-                        totalDurationMs += durationMs;
-
-                        String trackName = trackObject.getString("name");
-
-
-                        // formattedData.append("<div style=\"border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;\">");
-                        // formattedData.append("<p>").append("🎵 ").append(trackName).append("</p>");
-                        // formattedData.append("</div>");
-                    }
-
-                    List<String> sortedArtists = sortedList(artistCounts); // Sorted by how much they listen to them. sortedArtists.get(0) = Artist they listen to most
-                    List<String> sortedGenres = sortedList(genreCounts); // Sorted by how much they listen to that genre. Sorted same way as sorted artists
-                    Log.d("Error", "1");
-                    int totalDurationMinutes = totalDurationMs / 60000;
-*/
-                    // formattedData.append("<p>").append("Total listening time: ").append(totalDurationMinutes).append(" minutes").append("</p>");
-/**
-                    runOnUiThread(() -> {
-                        profileTextView.setText(Html.fromHtml(formattedData.toString(), Html.FROM_HTML_MODE_COMPACT));
-                        profileTextView.setMovementMethod(LinkMovementMethod.getInstance());
-                    }); */
                 } catch (IOException | JSONException e) {
                     Log.d("Error", "Failed to read or parse response: " + e);
                     runOnUiThread(() -> Toast.makeText(MainActivity.this, "Failed to process response",
@@ -424,7 +416,21 @@ public class MainActivity extends AppCompatActivity {
             displayWrappedData(user);
         }
     }
-
+    private String range() {
+        String out = "?time_range=";
+        switch (spinnerPosition) {
+            case 0:
+                out += "short_term&limit=5";
+                break;
+            case 1:
+                out += "medium_term&limit=25";
+                break;
+            default:
+                out += "long_term&limit=50";
+                break;
+        }
+        return out;
+    }
 
     private void displayWrappedData(WrappedData user) {
         String username = user.getUsername();
@@ -435,7 +441,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Set the username
         TextView usernameTextView = findViewById(R.id.username_text_view);
-        usernameTextView.setText("                   Welcome: " + username);
+        usernameTextView.setText("Welcome: " + username + exString());
 
         // Set the top artists using RecyclerView
         RecyclerView topArtistsRecyclerView = findViewById(R.id.top_artists_recycler_view);
@@ -463,7 +469,21 @@ public class MainActivity extends AppCompatActivity {
         topTracksRecyclerView.setAdapter(trackAdapter);
     }
 
-
+    private String exString() {
+        String out = "\nHere's your last ";
+        switch (spinnerPosition) {
+            case 0:
+                out += "month in Spotify!";
+                break;
+            case 1:
+                out += "half a year in Spotify!";
+                break;
+            default:
+                out += "year in Spotify!";
+                break;
+        }
+        return out;
+    }
 
 
 

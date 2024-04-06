@@ -19,7 +19,7 @@
         android:layout_marginEnd="16dp"
         android:text="Click Below To Generate Your Spotify Summary"
         android:textAlignment="center"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
@@ -69,11 +69,24 @@
         android:layout_marginEnd="16dp"
         android:background="@color/primary_color"
         android:backgroundTint="#4CAF50"
-        android:text="Get User Data"
+        android:text="Generate Wrapped"
         android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/token_text_view" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_text_view" />
 
     <!-- ScrollView for Response TextView -->
     <ScrollView
@@ -81,7 +94,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toTopOf="@id/profile_btn"
+        app:layout_constraintBottom_toTopOf="@id/back_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/token_btn">
@@ -99,6 +112,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="16dp"
+                android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 android:textStyle="bold"
@@ -152,29 +166,32 @@
                 app:layout_constraintBottom_toTopOf="@id/top_genres_text_view"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 android:orientation="horizontal" />
+
             <TextView
                 android:id="@+id/listening_time_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="16dp"
                 android:layout_marginTop="60dp"
                 android:gravity="center"
+                android:padding="16dp"
+                android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 tools:text="Listening Time: " />
+
         </LinearLayout>
     </ScrollView>
 
     <!-- Get User Profile Button -->
     <Button
-        android:id="@+id/profile_btn"
+        android:id="@+id/back_btn"
         android:layout_width="380dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:background="@color/primary_color"
-        android:text="Get User Profile"
+        android:text="Back to Homepage"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
