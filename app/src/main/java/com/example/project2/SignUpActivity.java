@@ -59,7 +59,7 @@ public class SignUpActivity extends AppCompatActivity {
                                                 Log.d(TAG, "createUserWithEmail:success");
                                                 Toast.makeText(SignUpActivity.this, "Account successfully created!",
                                                         Toast.LENGTH_SHORT).show();
-                                                Intent myIntent = new Intent(SignUpActivity.this, SignInActivity.class);
+                                                Intent myIntent = new Intent(SignUpActivity.this, UserLogin.class);
                                                 startActivity(myIntent);
                                             } else {
                                                 Log.w(TAG, "createUserWithEmail:failure", createTask.getException());

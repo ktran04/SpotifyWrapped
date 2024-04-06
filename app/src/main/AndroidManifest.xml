@@ -62,6 +62,12 @@
             <!-- No specific intent-filter required unless this activity is directly accessed from outside -->
         </activity>
 
+        <activity
+            android:name=".PastSpotifyWrapped"
+            android:exported="true">
+            <!-- No specific intent-filter required unless this activity is directly accessed from outside -->
+        </activity>
+
         <!-- Other activities and application components -->
 
     </application>
