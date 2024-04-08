@@ -445,7 +445,7 @@ public class MainActivity extends AppCompatActivity {
         if (fbu != null) {
             Map<String, Object> input = new HashMap<>();
             input.put("User ID", fbu.getUid());
-            input.put("Wrapped Data", user);
+            input.put("Wrapped Data", user.toString());
             db.collection("user").add(input).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                 @Override
                 public void onSuccess(DocumentReference documentReference) {

@@ -52,7 +52,8 @@ public class WrappedData {
     @Override
     public String toString() {
         StringBuilder out = new StringBuilder();
-        out.append("Username: ").append(username).append("\nFollowers: ").append(followers).append("\n Email: ").append(email);
+        out.append("Username: ").append(username);
+        out.append("\nSP: ").append(sp);
         out.append("\nTop Tracks:\n");
         for (String s : topTracks) {
             out.append('\t').append(s).append('\n');
@@ -61,8 +62,22 @@ public class WrappedData {
         for (String s : topArtists) {
             out.append('\t').append(s).append('\n');
         }
-        out.append("Listening Time: ").append(listeningTimeMS).append(" Seconds");
+        out.append("Genres:\n");
+        for (String s : topGenres) {
+            out.append('\t').append(s).append('\n');
+        }
+        out.append("Listening Time: ").append(listeningTimeMS);
         return out.toString();
+    }
+
+    private String ts() {
+        if (sp == 0) {
+            return "Month";
+        } else if (sp == 1) {
+            return "Half Year";
+        } else {
+            return "Year";
+        }
     }
 
     public int getTotalTime() {
@@ -97,4 +112,17 @@ public class WrappedData {
         sp = i;
     }
 
+    public void setListeningTimeMS(int listeningTimeMS) {
+        this.listeningTimeMS = listeningTimeMS;
+    }
+
+    public void addGenre(String genre) {
+        if (topGenres != null) {
+            topGenres.add(genre);
+        }
+    }
+
+    public int getSp() {
+        return sp;
+    }
 }
