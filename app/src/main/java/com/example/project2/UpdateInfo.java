@@ -21,6 +21,8 @@ public class UpdateInfo extends AppCompatActivity {
 
     private static final String TAG = "UpdateCredentials";
     private EditText editTextNewEmail, editTextNewPassword;
+    private boolean emailUpdateSuccess = false;
+    private boolean passwordUpdateSuccess = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,10 @@ public class UpdateInfo extends AppCompatActivity {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (user != null) {
+            // Reset flags
+            emailUpdateSuccess = false;
+            passwordUpdateSuccess = false;
+
             // Update email
             user.updateEmail(newEmail)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -52,6 +58,8 @@ public class UpdateInfo extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 Log.d(TAG, "User email address updated.");
                                 Toast.makeText(UpdateInfo.this, "Email address successfully updated", Toast.LENGTH_SHORT).show();
+                                emailUpdateSuccess = true;
+                                checkAndNavigateBack();
                             }
                         }
                     });
@@ -64,9 +72,20 @@ public class UpdateInfo extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 Log.d(TAG, "User password updated.");
                                 Toast.makeText(UpdateInfo.this, "Password successfully updated", Toast.LENGTH_SHORT).show();
+                                passwordUpdateSuccess = true;
+                                checkAndNavigateBack();
                             }
                         }
                     });
+        }
+    }
+
+    private void checkAndNavigateBack() {
+        if (emailUpdateSuccess && passwordUpdateSuccess) {
+            // Both email and password have been successfully updated, navigate back
+            Intent intent = new Intent(UpdateInfo.this, UserLogin.class);
+            startActivity(intent);
+            finish(); // Optional: if you don't want users to return to this screen with the back button.
         }
     }
 }
