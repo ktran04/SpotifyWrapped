@@ -17,7 +17,7 @@ public class UserLogin extends AppCompatActivity {
 
         buttonSignIn = findViewById(R.id.buttonSignIn);
         buttonSignUp = findViewById(R.id.buttonSignUp);
-        buttonUpdateInfo = findViewById(R.id.buttonUpdateInfo);
+        //buttonUpdateInfo = findViewById(R.id.buttonUpdateInfo);
 //        buttonDeleteAccount = findViewById(R.id.buttonDeleteAccount);
 
         buttonSignIn.setOnClickListener(new View.OnClickListener() {
@@ -34,12 +34,12 @@ public class UserLogin extends AppCompatActivity {
             }
         });
 
-        buttonUpdateInfo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                navigateToUpdateInfo();
-            }
-        });
+//        buttonUpdateInfo.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                navigateToUpdateInfo();
+//            }
+//        });
 
 //        buttonDeleteAccount.setOnClickListener(new View.OnClickListener() {
 //            @Override

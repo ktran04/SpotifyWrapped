@@ -40,15 +40,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"/>
 
-    <Button
-        android:id="@+id/buttonUpdateInfo"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Update Login Information"
-        app:layout_constraintTop_toBottomOf="@id/buttonSignUp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"/>
+<!--    <Button-->
+<!--        android:id="@+id/buttonUpdateInfo"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Update Login Information"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/buttonSignUp"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        android:layout_marginTop="16dp"/>-->
 
     <!-- figure out delete screen-->
 
@@ -68,7 +68,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Back"
-        app:layout_constraintTop_toBottomOf="@id/buttonUpdateInfo"
+        app:layout_constraintTop_toBottomOf="@id/buttonSignUp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"/>
