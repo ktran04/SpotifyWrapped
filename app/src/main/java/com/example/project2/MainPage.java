@@ -25,13 +25,21 @@ public class MainPage extends AppCompatActivity {
 
         Button buttonUpdateInfo = findViewById(R.id.buttonUpdateInfo);
         Button buttonDeleteAccount = findViewById(R.id.buttonDeleteAccount);
-        //Button buttonPastSpotifyWrapped = findViewById(R.id.buttonPastSpotifyWrapped);
+        Button buttonPastSpotifyWrapped = findViewById(R.id.buttonPastSpotifyWrapped);
         Button buttonSignOut = findViewById(R.id.buttonSignOut);
+        Button buttonGenWrapped = findViewById(R.id.genWrappedActivity);
+
+        buttonPastSpotifyWrapped.setOnClickListener(view -> {
+            startActivity(new Intent(MainPage.this, PastSpotifyWrapped.class));
+        });
+        buttonGenWrapped.setOnClickListener(view -> {
+            startActivity(new Intent(MainPage.this, MainActivity.class));
+        });
 
         buttonUpdateInfo.setOnClickListener(view -> {
             startActivity(new Intent(MainPage.this, UpdateInfo.class));
         });
-        
+
         buttonDeleteAccount.setOnClickListener(view -> {
 //            startActivity(new Intent(MainPage.this, DeleteAccount.class));
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();

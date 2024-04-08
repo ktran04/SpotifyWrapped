@@ -30,6 +30,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import android.widget.ImageView;
+
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -438,6 +440,24 @@ public class MainActivity extends AppCompatActivity {
         List<String> topArtists = user.getTopArtists();
         List<String> topGenres = user.getTopGenres();
         int totalListeningTimeMinutes = user.getListeningTimeMS() / 60000;
+        user.setSP(spinnerPosition);
+        FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
+        if (fbu != null) {
+            Map<String, Object> input = new HashMap<>();
+            input.put("User ID", fbu.getUid());
+            input.put("Wrapped Data", user);
+            db.collection("user").add(input).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                @Override
+                public void onSuccess(DocumentReference documentReference) {
+                    Log.d(TAG, "Yippee");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d(TAG, "Help");
+                }
+            });
+        }
 
         // Set the username
         TextView usernameTextView = findViewById(R.id.username_text_view);

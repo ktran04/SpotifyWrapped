@@ -5,11 +5,14 @@ import java.util.List;
 
 public class WrappedData {
     private String username;
+
     private int followers;
     private String email;
     private List<String> topTracks;
     private List<String> topArtists;
     private int listeningTimeMS;
+
+    private int sp;
 
     private List<String> topGenres;
 
@@ -90,5 +93,8 @@ public class WrappedData {
         return username;
     }
 
+    public void setSP(int i) {
+        sp = i;
+    }
 
 }
