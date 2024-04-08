@@ -46,7 +46,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Login to Spotify Wrapped"
-        android:background="@color/primary_color"
+        android:background="#D1768F"
         android:textColor="@android:color/white"
         tools:ignore="MissingConstraints" />
 
@@ -67,7 +67,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:background="@color/primary_color"
+        android:background="#D1768F"
         android:backgroundTint="#4CAF50"
         android:text="Generate Wrapped"
         android:textColor="@android:color/white"
@@ -190,7 +190,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:background="@color/primary_color"
+        android:background="#D1768F"
         android:text="Back to Homepage"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -18,6 +18,7 @@
     <Button
         android:id="@+id/buttonUpdateInfo"
         android:layout_width="match_parent"
+        android:background="#D1768F"
         android:layout_height="wrap_content"
         android:text="Update Info"
         android:layout_below="@+id/textViewWrapped"
@@ -26,6 +27,7 @@
     <Button
         android:id="@+id/buttonDeleteAccount"
         android:layout_width="match_parent"
+        android:background="#D1768F"
         android:layout_height="wrap_content"
         android:text="Delete Account"
         android:layout_below="@+id/buttonUpdateInfo"
@@ -44,6 +46,7 @@
         android:id="@+id/buttonSignOut"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#D1768F"
         android:text="Sign Out"
         android:layout_below="@+id/buttonDeleteAccount"
         android:layout_marginTop="16dp"/>
@@ -53,6 +56,7 @@
         android:layout_width="348dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/buttonSignOut"
+        android:background="#D1768F"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="17dp"
@@ -66,6 +70,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/genWrappedActivity"
         android:layout_alignParentStart="true"
+        android:background="#D1768F"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="36dp"
         android:layout_marginTop="57dp"
