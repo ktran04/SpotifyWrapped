@@ -1,37 +1,37 @@
 package com.example.project2;
 
-import static androidx.core.content.ContentProviderCompat.requireContext;
-import static com.example.project2.TextDrawable.generateBitmap;
-
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
-import android.app.WallpaperManager;
-import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.content.Intent;
+import java.util.Random;
 import android.net.Uri;
-import android.os.Environment;
-import android.provider.MediaStore;
+import android.text.Html;
+import android.text.Layout;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.method.LinkMovementMethod;
+import android.text.style.AlignmentSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
+import android.text.style.TypefaceSpan;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.bumptech.glide.Glide;
+import android.widget.ImageView;
+
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -42,37 +42,37 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import com.google.firebase.firestore.SetOptions;
 import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
 
-import org.jetbrains.annotations.NotNull;
+import org.checkerframework.checker.units.qual.C;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import android.Manifest;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -81,154 +81,125 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int AUTH_TOKEN_REQUEST_CODE = 0;
     public static final int AUTH_CODE_REQUEST_CODE = 1;
+
+    public static final int TOP_ARTIST_REQUEST_CODE = 2;
     private static final String TAG = "MainActivity";
     private FirebaseFirestore db;
     private FirebaseAuth auth;
+    private RecyclerView trackRecyclerView;
     private FirebaseAnalytics mFirebaseAnalytics;
 
     private final OkHttpClient mOkHttpClient = new OkHttpClient();
-    private String mAccessToken, mAccessCode;
+    private String mAccessToken, mAccessCode, aAccessToken;
     private Call mCall;
 
     private TextView tokenTextView, codeTextView, profileTextView;
 
-    private static final int REQUEST_CODE = 1;
-    ImageView profile_info;
-    Button SaveImg;
-    OutputStream outputStream;
+    private WrappedData user;
+    private RecyclerView topTracksRecyclerView;
+    private RecyclerView topArtistsRecyclerView;
+    private TopTracksAdapter topTracksAdapter;
+    private TopGenresAdapter topGenresAdapter;
+    private RecyclerView topGenresRecyclerView;
 
+    private int spinnerPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        spinnerPosition = 0;
 
-        FirebaseApp.initializeApp(this);
+
+        Spinner spinner = findViewById(R.id.spinner);
+        String[] stuff = new String[]{"Month", "Half Year", "Year"};
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, stuff);
+        spinner.setAdapter(spinnerAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                spinnerPosition = position;
+                Log.d("Error", "" + spinnerPosition);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                spinnerPosition = spinnerPosition;
+                Log.d("Error", "" + spinnerPosition);
+            }
+        });
+
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
-
-
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         // Initialize the views
         profileTextView = (TextView) findViewById(R.id.response_text_view);
 
-
         // Initialize the buttons
         Button tokenBtn = (Button) findViewById(R.id.token_btn);
-        Button profileBtn = (Button) findViewById(R.id.profile_btn);
-        Button download_image_btn = (Button) findViewById(R.id.download_image_btn);
 
-        profile_info = findViewById(R.id.profile_image_view);
+        topGenresRecyclerView = findViewById(R.id.top_genres_recycler_view);
+        LinearLayoutManager genreLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        topGenresRecyclerView.setLayoutManager(genreLayoutManager);
+        TopGenresAdapter genreAdapter = new TopGenresAdapter(new ArrayList<>());
+        topGenresRecyclerView.setAdapter(genreAdapter);
 
+        topArtistsRecyclerView = findViewById(R.id.top_artists_recycler_view);
+        LinearLayoutManager artistLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+
+        trackRecyclerView = findViewById(R.id.trackRecyclerView);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        trackRecyclerView.setLayoutManager(layoutManager);
+        topArtistsRecyclerView.setLayoutManager(artistLayoutManager);
+        TopArtistsAdapter artistsAdapter = new TopArtistsAdapter(this, new ArrayList<>()); // Pass empty list initially
+        topArtistsRecyclerView.setAdapter(artistsAdapter);
+
+
+        // Set up adapter
+        TopTracksAdapter trackAdapter; // Pass empty list initially
+        trackAdapter = new TopTracksAdapter(new ArrayList<>());
+        trackRecyclerView.setAdapter(trackAdapter);
         // Set the click listeners for the buttons
-
         tokenBtn.setOnClickListener((v) -> {
-            getToken();
+            Log.d(TAG, "Token Button Clicked");
+            user = new WrappedData();
+            getToken(0);
         });
 
-        profileBtn.setOnClickListener((v) -> {
-            onGetUserProfileClicked();
-        });
-        tokenTextView = (TextView) findViewById(R.id.token_text_view);
-        profileTextView = (TextView) findViewById(R.id.response_text_view);
+        Button back = findViewById(R.id.back_btn);
 
-        download_image_btn.setOnClickListener(new View.OnClickListener() {
+        back.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
-
-                if (ContextCompat.checkSelfPermission(MainActivity.this,Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
-
-                    saveImage();
-
-                }else {
-
-
-                    ActivityCompat.requestPermissions(MainActivity.this, new String[] {
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    },REQUEST_CODE);
-
-                }
-
+                Intent backToHome = new Intent(MainActivity.this, MainPage.class);
+                startActivity(backToHome);
             }
         });
-    }
 
 
+        // Find the Sign In button by its ID
+        Button signInButton = findViewById(R.id.buttonSignIn);
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull @NotNull String[] permissions, @NonNull @NotNull int[] grantResults) {
-
-        if (requestCode == REQUEST_CODE)
-        {
-
-            if (true){
-
-
-                saveImage();
-
-            }else {
-
-
-                Toast.makeText(MainActivity.this,"Please provide the required permissions",Toast.LENGTH_SHORT).show();
-
+        // Set an OnClickListener on the Sign In button
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create an Intent to start the SignInActivity
+                Intent signInIntent = new Intent(MainActivity.this, UserLogin.class);
+                startActivity(signInIntent);
             }
+        });
 
-        }
 
 
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // Initialize the views
+
+        // Log the initialization completion
+        Log.d(TAG, "Activity initialized successfully");
     }
-
-    private void saveImage() {
-        Uri images;
-        ContentResolver contentResolver = getContentResolver();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            images = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
-        } else {
-            images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        }
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(MediaStore.Images.Media.DISPLAY_NAME, System.currentTimeMillis() + ".jpg");
-        contentValues.put(MediaStore.Images.Media.MIME_TYPE, "images/*");
-        Uri uri = contentResolver.insert(images, contentValues);
-
-        try {
-            BitmapDrawable bitmapDrawable = (BitmapDrawable) profile_info.getDrawable();
-            Bitmap bitmap = bitmapDrawable.getBitmap();
-            OutputStream outputStream = contentResolver.openOutputStream(Objects.requireNonNull(uri));
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-            Objects.requireNonNull(outputStream);
-            Toast.makeText(MainActivity.this,"Image Saved Successfully",Toast.LENGTH_SHORT).show();
-        } catch(Exception e) {
-            Toast.makeText(MainActivity.this,"Image Not Saved",Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-
-        }
-
-
-
-    }
-
-
-
-
-
-
-    // Initialize the views
-
-
-//        Button writeButton = findViewById(R.id.writeButton);
-//        Button readButton = findViewById(R.id.readButton);
-//        final TextView textViewDatabase = findViewById(R.id.textViewDatabase);
-
-        // Initialize the buttons
-
-
-        // Set the click listeners for the buttons
-
-
 
 
     /**
@@ -237,9 +208,11 @@ public class MainActivity extends AppCompatActivity {
      * What is token?
      * https://developer.spotify.com/documentation/general/guides/authorization-guide/
      */
-    public void getToken() {
-        final AuthorizationRequest request = getAuthenticationRequest(AuthorizationResponse.Type.TOKEN);
-        AuthorizationClient.openLoginActivity(MainActivity.this, AUTH_TOKEN_REQUEST_CODE, request);
+    public void getToken(int code) {
+        Log.d(TAG, "getToken() called with code: " + code);
+        final AuthorizationRequest request = getAuthenticationRequest(AuthorizationResponse.Type.TOKEN, code);
+        Log.d(TAG, "AuthorizationRequest created: " + request);
+        AuthorizationClient.openLoginActivity(MainActivity.this, code, request);
     }
 
     /**
@@ -249,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
      * https://developer.spotify.com/documentation/general/guides/authorization-guide/
      */
     public void getCode() {
-        final AuthorizationRequest request = getAuthenticationRequest(AuthorizationResponse.Type.CODE);
+        final AuthorizationRequest request = getAuthenticationRequest(AuthorizationResponse.Type.CODE, 1);
         AuthorizationClient.openLoginActivity(MainActivity.this, AUTH_CODE_REQUEST_CODE, request);
     }
 
@@ -267,14 +240,20 @@ public class MainActivity extends AppCompatActivity {
         if (AUTH_TOKEN_REQUEST_CODE == requestCode) {
             mAccessToken = response.getAccessToken();
             // updateSpotifyTokenInFirestore(mAccessToken);
+            onGetUserProfileClicked();
+            getToken(2);
 
         } else if (AUTH_CODE_REQUEST_CODE == requestCode) {
             mAccessCode = response.getCode();
             setTextAsync(mAccessCode, codeTextView);
+        } else if (TOP_ARTIST_REQUEST_CODE == requestCode) {
+            aAccessToken = response.getAccessToken();
+            parseTopData("tracks");
+        } else {
+            aAccessToken = response.getAccessToken();
+            parseTopData("artists");
         }
 
-        Button profileBtn = (Button) findViewById(R.id.profile_btn);
-        profileBtn.performClick();
     }
 
     /**
@@ -335,60 +314,21 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.d("HTTP", "Failed to fetch data: " + e);
-                Toast.makeText(MainActivity.this, "Failed to fetch data, watch Logcat for more details",
-                        Toast.LENGTH_SHORT).show();
-            }
-            // Method to generate Bitmap from user profile data
-            private Bitmap generateImageFromProfile(Context context, UserProfile userProfile) {
-                String text = "Followers: " + userProfile.followers.total + "\nEmail: " + userProfile.email + "\nDisplay Name: " + userProfile.display_name;
-                //String text = "Followers: " + userProfile.followers.total + "\nEmail: " + userProfile.email;
-
-                // Assuming screenWidth and screenHeight are available in your context
-                Bitmap backgroundImage = BitmapFactory.decodeResource(getResources(), R.drawable.spotify_profile_info_background); // Change R.drawable.background_image to your desired background image resource
-
-                int screenWidth = getResources().getDisplayMetrics().widthPixels;
-                int screenHeight = getResources().getDisplayMetrics().heightPixels;
-
-                // Generate the bitmap with the provided text
-
-                return generateBitmap(context, text, backgroundImage, screenWidth, screenHeight);
-
 
             }
-
-
-
-
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 try {
                     final String jsonResponse = response.body().string();
                     Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-                    /*// Parse JSON response into a Java object
                     UserProfile userProfile = gson.fromJson(jsonResponse, UserProfile.class);
-                    Bitmap profileImage = generateImageFromProfile(userProfile);
-                    runOnUiThread(() -> {
-                        ImageView imageView = findViewById(R.id.profile_image_view); // Replace with your ImageView ID
-                        imageView.setImageBitmap(profileImage);
-                    });*/
-                    // Parse JSON response into a Java object
-                    UserProfile userProfile = gson.fromJson(jsonResponse, UserProfile.class);
-
-                    // Generate image from user profile data
-                    Bitmap profileImage = generateImageFromProfile(MainActivity.this, userProfile);
-                    runOnUiThread(() -> {
-                        ImageView imageView = findViewById(R.id.profile_image_view); // Replace with your ImageView ID
-                        imageView.setImageBitmap(profileImage);
-                    });
 
                     // Format the user profile data
-                    /*String formattedProfile = "User: " + userProfile.display_name + "\n" +
-                            "Followers: " + userProfile.followers.total + "\n" +
-                            "Email: " + userProfile.email;
-
-                    setTextAsync(formattedProfile, profileTextView);*/
+                    user.setUsername(userProfile.display_name);
+                    user.setFollowers(userProfile.followers.total);
+                    user.setEmail(userProfile.email);
+                    // Parse JSON response into a Java object
                 } catch (IOException e) {
                     Log.d("IO", "Failed to read response: " + e);
                     Toast.makeText(MainActivity.this, "Failed to read response, watch Logcat for more details",
@@ -398,7 +338,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // Define a class to represent user profile data
     class UserProfile {
         String display_name;
         Followers followers;
@@ -408,6 +347,188 @@ public class MainActivity extends AppCompatActivity {
             int total;
         }
     }
+
+    // Define a class to represent user profile data
+    public void parseTopData(String type) {
+        Log.d(TAG, "Get user top artists clicked");
+        String url;
+        if (type.equals("tracks")) {
+            url = "https://api.spotify.com/v1/me/top/tracks";
+        } else {
+            url = "https://api.spotify.com/v1/me/top/artists";
+        }
+        url += range();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + aAccessToken)
+                .build();
+
+        cancelCall();
+        mCall = mOkHttpClient.newCall(request);
+
+        mCall.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("HTTP", "Failed to fetch data: " + type);
+                runOnUiThread(() -> Toast.makeText(MainActivity.this, "Failed to fetch data, watch Logcat for more details",
+                        Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    String jsonResponse = response.body().string();
+                    JSONObject jsonObject = new JSONObject(jsonResponse);
+                    JSONArray itemsArray = jsonObject.getJSONArray("items");
+                    if (type.equals("tracks")) {
+                        for (int i = 0; i < itemsArray.length(); i++) {
+                            user.addTrack(itemsArray.getJSONObject(i).getString("name"));
+                            user.addTime(itemsArray.getJSONObject(i).getInt("duration_ms"));
+                        }
+                    } else {
+                        Map<String, Integer> genreCounts = new HashMap<>();
+                        for (int i = 0; i < itemsArray.length(); i++) {
+                            user.addArtist(itemsArray.getJSONObject(i).getString("name"));
+                            JSONArray genres = itemsArray.getJSONObject(i).getJSONArray("genres");
+                            for (int j = 0; j < genres.length(); j++) {
+                                increment(genres.getString(j), genreCounts);
+                            }
+                        }
+                        Log.d("Error", genreCounts.toString());
+                        user.setTopGenres(sortedList(genreCounts));
+                    }
+                } catch (IOException | JSONException e) {
+                    Log.d("Error", "Failed to read or parse response: " + e);
+                    runOnUiThread(() -> Toast.makeText(MainActivity.this, "Failed to process response",
+                            Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
+        if (type.equals("tracks")) {
+            getToken(3);
+        } else if (type.equals("artists")){
+            while (user.getTopGenres() == null) {
+                continue;
+            }
+            Log.d("Error", user.getUsername());
+            Log.d("Error", user.getTopArtists().toString());
+            Log.d("Error", user.getTopTracks().toString());
+            Log.d("Error", user.getTopGenres().toString());
+            displayWrappedData(user);
+        }
+    }
+    private String range() {
+        String out = "?time_range=";
+        switch (spinnerPosition) {
+            case 0:
+                out += "short_term&limit=5";
+                break;
+            case 1:
+                out += "medium_term&limit=25";
+                break;
+            default:
+                out += "long_term&limit=50";
+                break;
+        }
+        return out;
+    }
+
+    private void displayWrappedData(WrappedData user) {
+        String username = user.getUsername();
+        List<String> topTracks = user.getTopTracks();
+        List<String> topArtists = user.getTopArtists();
+        List<String> topGenres = user.getTopGenres();
+        int totalListeningTimeMinutes = user.getListeningTimeMS() / 60000;
+        user.setSP(spinnerPosition);
+        FirebaseUser fbu = FirebaseAuth.getInstance().getCurrentUser();
+        if (fbu != null) {
+            Map<String, Object> input = new HashMap<>();
+            input.put("User ID", fbu.getUid());
+            input.put("Wrapped Data", user.toString());
+            db.collection("user").add(input).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                @Override
+                public void onSuccess(DocumentReference documentReference) {
+                    Log.d(TAG, "Yippee");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d(TAG, "Help");
+                }
+            });
+        }
+
+        // Set the username
+        TextView usernameTextView = findViewById(R.id.username_text_view);
+        usernameTextView.setText("Welcome: " + username + exString());
+
+        // Set the top artists using RecyclerView
+        RecyclerView topArtistsRecyclerView = findViewById(R.id.top_artists_recycler_view);
+        LinearLayoutManager artistLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        topArtistsRecyclerView.setLayoutManager(artistLayoutManager);
+        TopArtistsAdapter artistsAdapter = new TopArtistsAdapter(this, topArtists);
+        topArtistsRecyclerView.setAdapter(artistsAdapter);
+
+        // Set the top genres using RecyclerView
+        RecyclerView topGenresRecyclerView = findViewById(R.id.top_genres_recycler_view);
+        LinearLayoutManager genresLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        topGenresRecyclerView.setLayoutManager(genresLayoutManager);
+        TopGenresAdapter genresAdapter = new TopGenresAdapter(topGenres);
+        topGenresRecyclerView.setAdapter(genresAdapter);
+
+        // Set the total listening time
+        TextView listeningTimeTextView = findViewById(R.id.listening_time_text_view);
+        listeningTimeTextView.setText("            Total Listening Time: " + totalListeningTimeMinutes + " minutes");
+
+        // Set the top tracks using RecyclerView
+        RecyclerView topTracksRecyclerView = findViewById(R.id.top_tracks_recycler_view);
+        LinearLayoutManager trackLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        topTracksRecyclerView.setLayoutManager(trackLayoutManager);
+        TopTracksAdapter trackAdapter = new TopTracksAdapter(topTracks);
+        topTracksRecyclerView.setAdapter(trackAdapter);
+    }
+
+    private String exString() {
+        String out = "\nHere's your last ";
+        switch (spinnerPosition) {
+            case 0:
+                out += "month in Spotify!";
+                break;
+            case 1:
+                out += "half a year in Spotify!";
+                break;
+            default:
+                out += "year in Spotify!";
+                break;
+        }
+        return out;
+    }
+
+
+
+    private void increment(String key, Map<String, Integer> map) {
+        map.putIfAbsent(key, 0);
+        map.put(key, map.get(key) + 1);
+    }
+
+    private List<String> sortedList(Map<String, Integer> map) {
+        List<String> out = new ArrayList<>();
+        for (String key : map.keySet()) {
+            out.add(key);
+            for (int i = out.size() - 1; i > 0 && map.get(out.get(i)) > map.get(out.get(i - 1)); i--) {
+                swap(out, i, i - 1);
+            }
+        }
+        return out;
+    }
+
+    private void swap(List<String> list, int i, int j) {
+        String si = list.get(i);
+        list.set(i, list.get(j));
+        list.set(j, si);
+    }
+
 
     /**
      * Creates a UI thread to update a TextView in the background
@@ -426,12 +547,20 @@ public class MainActivity extends AppCompatActivity {
      * @param type the type of the request
      * @return the authentication request
      */
-    private AuthorizationRequest getAuthenticationRequest(AuthorizationResponse.Type type) {
-        return new AuthorizationRequest.Builder(CLIENT_ID, type, getRedirectUri().toString())
-                .setShowDialog(true)
-                .setScopes(new String[] { "user-read-email" }) // <--- Change the scope of your requested token here
-                .setCampaign("your-campaign-token")
-                .build();
+    private AuthorizationRequest getAuthenticationRequest(AuthorizationResponse.Type type, int code) {
+        if (code == AUTH_TOKEN_REQUEST_CODE) {
+            return new AuthorizationRequest.Builder(CLIENT_ID, type, getRedirectUri().toString())
+                    .setShowDialog(true)
+                    .setScopes(new String[] { "user-read-email" }) // <--- Change the scope of your requested token here
+                    .setCampaign("your-campaign-token")
+                    .build();
+        } else {
+            return new AuthorizationRequest.Builder(CLIENT_ID, type, getRedirectUri().toString())
+                    .setShowDialog(true)
+                    .setScopes(new String[] { "user-top-read" }) // <--- Change the scope of your requested token here
+                    .setCampaign("your-campaign-token")
+                    .build();
+        }
     }
 
     /**
@@ -449,9 +578,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void onFailure(Call call, IOException e) {
+        Log.d("HTTP", "Failed to fetch data: " + e);
+        runOnUiThread(() -> Toast.makeText(MainActivity.this, "Failed to fetch data, watch Logcat for more details",
+                Toast.LENGTH_SHORT).show());
+    }
+    private String formatDuration(int duration) {
+        return String.valueOf(duration);
+    }
     @Override
     protected void onDestroy() {
         cancelCall();
         super.onDestroy();
     }
+
 }

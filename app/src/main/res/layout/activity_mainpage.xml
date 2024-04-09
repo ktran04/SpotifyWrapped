@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:backgroundTint="#000000"
+    android:gravity="center"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/textViewWrapped"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="36dp"
+        android:text="Your Spotify Wrapped"
+        android:textColor="#FFFFFF"
+        android:textSize="28sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/buttonUpdateInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewWrapped"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/spotify_green"
+        android:text="Update Info" />
+
+    <Button
+        android:id="@+id/buttonDeleteAccount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonUpdateInfo"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#1DB954"
+        android:text="Delete Account" />
+
+    <!--    <Button-->
+    <!--        android:id="@+id/buttonPastSpotifyWrapped"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:text="Past Spotify Wrapped"-->
+    <!--        android:layout_below="@+id/buttonDeleteAccount"-->
+    <!--        android:layout_marginTop="16dp"/>-->
+
+    <!--change to below buttonSpotify-->
+    <Button
+        android:id="@+id/buttonSignOut"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonDeleteAccount"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#1DB954"
+        android:text="Sign Out" />
+
+    <Button
+        android:id="@+id/genWrappedActivity"
+        android:layout_width="348dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonSignOut"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="53dp"
+        android:layout_marginEnd="30dp"
+        android:backgroundTint="#1DB954"
+        android:text="Make New Wrapped" />
+
+    <Button
+        android:id="@+id/buttonPastSpotifyWrapped"
+        android:layout_width="338dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/genWrappedActivity"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="30dp"
+        android:backgroundTint="#1DB954"
+        android:text="Get Past Wrappeds" />
+
+</RelativeLayout>
