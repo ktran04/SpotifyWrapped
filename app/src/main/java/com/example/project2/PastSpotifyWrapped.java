@@ -10,6 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -111,7 +113,6 @@ public class PastSpotifyWrapped extends AppCompatActivity {
                     }
                     public void displayData(int i) {
                         // Old stuff (you can delete this idc)
-                        tv.setText(pastWrappeds.get(i).toString());
                         TextView posView = findViewById(R.id.pwPos);
                         String temp = (i + 1) + "/" + pastWrappeds.size();
                         posView.setText(temp);
@@ -123,17 +124,45 @@ public class PastSpotifyWrapped extends AppCompatActivity {
                         List<String> topTracks = data.getTopTracks();
                         List<String> topArtists = data.getTopArtists();
                         List<String> topGenres = data.getTopGenres();
+                        int totalListeningTimeMinutes = data.getListeningTimeMS() / 60000;
+                        // Set the username
+                        TextView usernameTextView = findViewById(R.id.username_text_view);
+                        usernameTextView.setText("Welcome: " + username + "\nHere's your last " + timespan + " in music!");
 
+                        // Set the top artists using RecyclerView
+                        RecyclerView topArtistsRecyclerView = findViewById(R.id.top_artists_recycler_view1);
+                        LinearLayoutManager artistLayoutManager = new LinearLayoutManager(PastSpotifyWrapped.this, LinearLayoutManager.HORIZONTAL, false);
+                        topArtistsRecyclerView.setLayoutManager(artistLayoutManager);
+                        TopArtistsAdapter artistsAdapter = new TopArtistsAdapter(PastSpotifyWrapped.this, topArtists);
+                        topArtistsRecyclerView.setAdapter(artistsAdapter);
+
+                        // Set the top genres using RecyclerView
+                        RecyclerView topGenresRecyclerView = findViewById(R.id.top_genres_recycler_view1);
+                        LinearLayoutManager genresLayoutManager = new LinearLayoutManager(PastSpotifyWrapped.this, LinearLayoutManager.HORIZONTAL, false);
+                        topGenresRecyclerView.setLayoutManager(genresLayoutManager);
+                        TopGenresAdapter genresAdapter = new TopGenresAdapter(topGenres);
+                        topGenresRecyclerView.setAdapter(genresAdapter);
+
+                        // Set the total listening time
+                        TextView listeningTimeTextView = findViewById(R.id.listening_time_text_view2);
+                        listeningTimeTextView.setText("            Total Listening Time: " + totalListeningTimeMinutes + " minutes");
+
+                        // Set the top tracks using RecyclerView
+                        RecyclerView topTracksRecyclerView = findViewById(R.id.top_tracks_recycler_view1);
+                        LinearLayoutManager trackLayoutManager = new LinearLayoutManager(PastSpotifyWrapped.this, LinearLayoutManager.HORIZONTAL, false);
+                        topTracksRecyclerView.setLayoutManager(trackLayoutManager);
+                        TopTracksAdapter trackAdapter = new TopTracksAdapter(topTracks);
+                        topTracksRecyclerView.setAdapter(trackAdapter);
                     }
 
                     private String timespan(int i) {
                         switch (i) {
                             case 0:
-                                return "Month";
+                                return "month";
                             case 1:
-                                return "Half-Year";
+                                return "half-year";
                             default:
-                                return "Year";
+                                return "year";
                         }
                     }
                 });
