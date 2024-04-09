@@ -25,6 +25,20 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:text="Get User Data" />
+        <ImageView
+            android:id="@+id/profile_image_view"
+            android:layout_width="400dp"
+            android:layout_height="400dp"
+            android:src="@drawable/baseline_audiotrack_24"
+        android:scaleType="centerCrop"/>
+
+        <Button
+            android:id = "@+id/download_image_btn"
+            android:layout_width="400dp"
+            android:layout_height="50dp"
+            android:layout_margin="8dp"
+            android:text="Download Image" />
+
 
         <TextView
             android:id="@+id/response_text_view"

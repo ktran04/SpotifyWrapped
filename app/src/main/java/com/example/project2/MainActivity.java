@@ -1,13 +1,35 @@
 package com.example.project2;
 
+import static androidx.core.content.ContentProviderCompat.requireContext;
+import static com.example.project2.TextDrawable.generateBitmap;
+
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.annotation.SuppressLint;
+import android.app.WallpaperManager;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.gson.Gson;
@@ -23,24 +45,34 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import android.Manifest;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -60,6 +92,11 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView tokenTextView, codeTextView, profileTextView;
 
+    private static final int REQUEST_CODE = 1;
+    ImageView profile_info;
+    Button SaveImg;
+    OutputStream outputStream;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,9 +113,13 @@ public class MainActivity extends AppCompatActivity {
         // Initialize the views
         profileTextView = (TextView) findViewById(R.id.response_text_view);
 
+
         // Initialize the buttons
         Button tokenBtn = (Button) findViewById(R.id.token_btn);
         Button profileBtn = (Button) findViewById(R.id.profile_btn);
+        Button download_image_btn = (Button) findViewById(R.id.download_image_btn);
+
+        profile_info = findViewById(R.id.profile_image_view);
 
         // Set the click listeners for the buttons
 
@@ -89,10 +130,94 @@ public class MainActivity extends AppCompatActivity {
         profileBtn.setOnClickListener((v) -> {
             onGetUserProfileClicked();
         });
-
-        // Initialize the views
         tokenTextView = (TextView) findViewById(R.id.token_text_view);
         profileTextView = (TextView) findViewById(R.id.response_text_view);
+
+        download_image_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (ContextCompat.checkSelfPermission(MainActivity.this,Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
+
+                    saveImage();
+
+                }else {
+
+
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[] {
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    },REQUEST_CODE);
+
+                }
+
+            }
+        });
+    }
+
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull @NotNull String[] permissions, @NonNull @NotNull int[] grantResults) {
+
+        if (requestCode == REQUEST_CODE)
+        {
+
+            if (true){
+
+
+                saveImage();
+
+            }else {
+
+
+                Toast.makeText(MainActivity.this,"Please provide the required permissions",Toast.LENGTH_SHORT).show();
+
+            }
+
+        }
+
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private void saveImage() {
+        Uri images;
+        ContentResolver contentResolver = getContentResolver();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            images = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+        } else {
+            images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        }
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MediaStore.Images.Media.DISPLAY_NAME, System.currentTimeMillis() + ".jpg");
+        contentValues.put(MediaStore.Images.Media.MIME_TYPE, "images/*");
+        Uri uri = contentResolver.insert(images, contentValues);
+
+        try {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) profile_info.getDrawable();
+            Bitmap bitmap = bitmapDrawable.getBitmap();
+            OutputStream outputStream = contentResolver.openOutputStream(Objects.requireNonNull(uri));
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            Objects.requireNonNull(outputStream);
+            Toast.makeText(MainActivity.this,"Image Saved Successfully",Toast.LENGTH_SHORT).show();
+        } catch(Exception e) {
+            Toast.makeText(MainActivity.this,"Image Not Saved",Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+
+        }
+
+
+
+    }
+
+
+
+
+
+
+    // Initialize the views
+
 
 //        Button writeButton = findViewById(R.id.writeButton);
 //        Button readButton = findViewById(R.id.readButton);
@@ -104,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
         // Set the click listeners for the buttons
 
 
-    }
+
 
     /**
      * Get token from Spotify
@@ -213,6 +338,27 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Failed to fetch data, watch Logcat for more details",
                         Toast.LENGTH_SHORT).show();
             }
+            // Method to generate Bitmap from user profile data
+            private Bitmap generateImageFromProfile(Context context, UserProfile userProfile) {
+                String text = "Followers: " + userProfile.followers.total + "\nEmail: " + userProfile.email + "\nDisplay Name: " + userProfile.display_name;
+                //String text = "Followers: " + userProfile.followers.total + "\nEmail: " + userProfile.email;
+
+                // Assuming screenWidth and screenHeight are available in your context
+                Bitmap backgroundImage = BitmapFactory.decodeResource(getResources(), R.drawable.spotify_profile_info_background); // Change R.drawable.background_image to your desired background image resource
+
+                int screenWidth = getResources().getDisplayMetrics().widthPixels;
+                int screenHeight = getResources().getDisplayMetrics().heightPixels;
+
+                // Generate the bitmap with the provided text
+
+                return generateBitmap(context, text, backgroundImage, screenWidth, screenHeight);
+
+
+            }
+
+
+
+
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
@@ -220,15 +366,29 @@ public class MainActivity extends AppCompatActivity {
                     final String jsonResponse = response.body().string();
                     Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
+                    /*// Parse JSON response into a Java object
+                    UserProfile userProfile = gson.fromJson(jsonResponse, UserProfile.class);
+                    Bitmap profileImage = generateImageFromProfile(userProfile);
+                    runOnUiThread(() -> {
+                        ImageView imageView = findViewById(R.id.profile_image_view); // Replace with your ImageView ID
+                        imageView.setImageBitmap(profileImage);
+                    });*/
                     // Parse JSON response into a Java object
                     UserProfile userProfile = gson.fromJson(jsonResponse, UserProfile.class);
 
+                    // Generate image from user profile data
+                    Bitmap profileImage = generateImageFromProfile(MainActivity.this, userProfile);
+                    runOnUiThread(() -> {
+                        ImageView imageView = findViewById(R.id.profile_image_view); // Replace with your ImageView ID
+                        imageView.setImageBitmap(profileImage);
+                    });
+
                     // Format the user profile data
-                    String formattedProfile = "User: " + userProfile.display_name + "\n" +
+                    /*String formattedProfile = "User: " + userProfile.display_name + "\n" +
                             "Followers: " + userProfile.followers.total + "\n" +
                             "Email: " + userProfile.email;
 
-                    setTextAsync(formattedProfile, profileTextView);
+                    setTextAsync(formattedProfile, profileTextView);*/
                 } catch (IOException e) {
                     Log.d("IO", "Failed to read response: " + e);
                     Toast.makeText(MainActivity.this, "Failed to read response, watch Logcat for more details",
