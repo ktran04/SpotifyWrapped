@@ -104,6 +104,9 @@ public class MainActivity extends AppCompatActivity {
 
     private int spinnerPosition;
 
+    Button LLMAccess;
+    String value = new String("hello");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -199,6 +202,16 @@ public class MainActivity extends AppCompatActivity {
 
         // Log the initialization completion
         Log.d(TAG, "Activity initialized successfully");
+
+        LLMAccess = findViewById(R.id.LLMAccess);
+        LLMAccess.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, LLMAccess.class);
+                intent.putExtra("key", value);
+                startActivity(intent);
+            }
+        });
     }
 
 

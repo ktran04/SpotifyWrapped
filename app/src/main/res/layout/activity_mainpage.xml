@@ -56,12 +56,12 @@
         android:layout_width="348dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/buttonSignOut"
-        android:background="#D1768F"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginStart="17dp"
-        android:layout_marginTop="53dp"
-        android:layout_marginEnd="30dp"
+        android:layout_marginStart="87dp"
+        android:layout_marginTop="51dp"
+        android:layout_marginEnd="87dp"
+        android:background="#D1768F"
         android:text="Make New Wrapped" />
 
     <Button
@@ -70,11 +70,11 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/genWrappedActivity"
         android:layout_alignParentStart="true"
-        android:background="#D1768F"
         android:layout_alignParentEnd="true"
-        android:layout_marginStart="36dp"
-        android:layout_marginTop="57dp"
-        android:layout_marginEnd="21dp"
+        android:layout_marginStart="93dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="92dp"
+        android:background="#D1768F"
         android:text="Get Past Wrappeds" />
 
 </RelativeLayout>
