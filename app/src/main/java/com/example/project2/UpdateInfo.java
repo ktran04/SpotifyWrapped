@@ -39,6 +39,14 @@ public class UpdateInfo extends AppCompatActivity {
                 updateEmailAndPassword();
             }
         });
+
+        Button back = findViewById(R.id.backButton);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(UpdateInfo.this, MainPage.class));
+            }
+        });
     }
 
     private void updateEmailAndPassword() {
