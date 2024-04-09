@@ -180,6 +180,12 @@
                 android:textStyle="bold"
                 tools:text="Listening Time: " />
 
+            <Button
+                android:id="@+id/LLMAccess"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="How do I act, think, and dress according to Spotfiy??" />
+
         </LinearLayout>
     </ScrollView>
 

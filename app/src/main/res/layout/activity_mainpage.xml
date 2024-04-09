@@ -59,11 +59,13 @@
         android:layout_width="348dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/buttonSignOut"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
+        android:layout_marginStart="87dp"
         android:layout_marginStart="30dp"
+        android:layout_marginTop="51dp"
         android:layout_marginTop="53dp"
+        android:layout_marginEnd="87dp"
         android:layout_marginEnd="30dp"
+        android:background="#D1768F"
         android:backgroundTint="#1DB954"
         android:text="Make New Wrapped" />
 
@@ -72,11 +74,13 @@
         android:layout_width="338dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/genWrappedActivity"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
+        android:layout_marginStart="93dp"
         android:layout_marginStart="30dp"
+        android:layout_marginTop="50dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="92dp"
         android:layout_marginEnd="30dp"
+        android:background="#D1768F"
         android:backgroundTint="#1DB954"
         android:text="Get Past Wrappeds" />
 
