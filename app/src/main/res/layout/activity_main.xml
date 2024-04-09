@@ -175,16 +175,31 @@
                 android:gravity="center"
                 android:padding="16dp"
                 android:textAlignment="center"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 tools:text="Listening Time: " />
 
+<<<<<<< Updated upstream
             <Button
                 android:id="@+id/LLMAccess"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="How do I act, think, and dress according to Spotfiy??" />
+=======
+            <ImageView
+                android:id="@+id/image_summary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <Button
+                android:id="@+id/save_img_btn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Download Image"
+                android:visibility="gone"/>
+
+
+>>>>>>> Stashed changes
 
         </LinearLayout>
     </ScrollView>
