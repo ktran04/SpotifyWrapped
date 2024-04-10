@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.google.ai.client.generativeai:generativeai:0.2.2@aar" external-system-id="GRADLE">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/4a815f6fc604524dba02d78f697add15/transformed/generativeai-0.2.2/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/4a815f6fc604524dba02d78f697add15/transformed/generativeai-0.2.2/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.ai.client.generativeai/generativeai/0.2.2/9d5e93d271fef826146829895d7cee7fefac6af0/generativeai-0.2.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
