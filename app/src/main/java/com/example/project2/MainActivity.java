@@ -1,13 +1,26 @@
 package com.example.project2;
 
+import static com.example.project2.TextDrawable.generateBitmap;
+
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.content.Intent;
+
+import java.io.OutputStream;
+import java.util.Objects;
 import java.util.Random;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.text.Html;
 import android.text.Layout;
 import android.text.Spannable;
@@ -46,6 +59,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -72,6 +87,8 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import android.Manifest;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -104,8 +121,13 @@ public class MainActivity extends AppCompatActivity {
 
     private int spinnerPosition;
 
+
     Button LLMAccess;
     String value = new String("hello");
+
+    private static final int REQUEST_CODE = 1;
+    ImageView imageView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,17 +205,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Find the Sign In button by its ID
-        Button signInButton = findViewById(R.id.buttonSignIn);
 
-        // Set an OnClickListener on the Sign In button
-        signInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Create an Intent to start the SignInActivity
-                Intent signInIntent = new Intent(MainActivity.this, UserLogin.class);
-                startActivity(signInIntent);
-            }
-        });
 
 
 
@@ -208,6 +220,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, LLMAccess.class);
+                value = "HIIIIII";
                 intent.putExtra("key", value);
                 startActivity(intent);
             }
@@ -500,6 +513,84 @@ public class MainActivity extends AppCompatActivity {
         topTracksRecyclerView.setLayoutManager(trackLayoutManager);
         TopTracksAdapter trackAdapter = new TopTracksAdapter(topTracks);
         topTracksRecyclerView.setAdapter(trackAdapter);
+        imageView = findViewById(R.id.image_summary);
+        imageView.setImageBitmap(generateImageFromProfile(user));
+        Button saveImageButton = findViewById(R.id.save_img_btn);
+        saveImageButton.setVisibility(View.VISIBLE);
+        saveImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick (View view) {
+                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    saveImage();
+                } else {
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[] {
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    }, REQUEST_CODE);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onRequestPermissionsResult (int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_CODE) {
+            if (true) {
+                saveImage();
+            } else {
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        REQUEST_CODE);
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private void saveImage() {
+        Uri images;
+        ContentResolver contentResolver = getContentResolver();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            images = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+        } else {
+            images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        }
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MediaStore.Images.Media.DISPLAY_NAME, System.currentTimeMillis() + ".jpg");
+        contentValues.put(MediaStore.Images.Media.MIME_TYPE, "images/");
+        Uri uri = contentResolver.insert(images, contentValues);
+
+        try {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
+            Bitmap bitmap = bitmapDrawable.getBitmap();
+            OutputStream outputStream = contentResolver.openOutputStream(Objects.requireNonNull(uri));
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            Objects.requireNonNull(outputStream);
+            Toast.makeText(MainActivity.this, "Image saved successfully", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(MainActivity.this, "Image not saved", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+
+        }
+    }
+
+
+
+    private Bitmap generateImageFromProfile(WrappedData user) {
+        String text = "Top Tracks: " + "\n"  + user.getTopTracks().get(0) + "\n" + user.getTopTracks().get(1) + "\n" + user.getTopTracks().get(2)+ "\n"
+                + "\nTop Artists: " + "\n" + user.getTopArtists().get(0) + "\n" + user.getTopArtists().get(1) + "\n" + user.getTopArtists().get(2) + "\n" + user.getTopArtists().get(3) + "\n" + user.getTopArtists().get(4) + "\n" +
+                "\nTop Genres: " + "\n" + user.getTopGenres().get(0) + "\n" +  user.getTopGenres().get(1) + "\n" +  user.getTopGenres().get(2) + "\n" +  user.getTopGenres().get(3) + "\n" +  user.getTopGenres().get(4);
+        //String text = "Followers: " + userProfile.followers.total + "\nEmail: " + userProfile.email;
+
+        // Assuming screenWidth and screenHeight are available in your context
+        Bitmap backgroundImage = BitmapFactory.decodeResource(getResources(), R.drawable.your_wrapped_5); // Change R.drawable.background_image to your desired background image resource
+
+        int screenWidth = getResources().getDisplayMetrics().widthPixels;
+        int screenHeight = getResources().getDisplayMetrics().heightPixels;
+
+        // Generate the bitmap with the provided text
+
+        return generateBitmap(MainActivity.this, text, backgroundImage, screenWidth, screenHeight);
+
+
     }
 
     private String exString() {

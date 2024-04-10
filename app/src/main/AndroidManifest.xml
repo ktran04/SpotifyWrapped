@@ -4,6 +4,10 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -66,6 +70,13 @@
         </activity>
         <activity
             android:name=".PastSpotifyWrapped"
+            android:exported="true">
+
+            <!-- No specific intent-filter required unless this activity is directly accessed from outside -->
+        </activity>
+
+        <activity
+            android:name=".QuizActivity"
             android:exported="true">
 
             <!-- No specific intent-filter required unless this activity is directly accessed from outside -->

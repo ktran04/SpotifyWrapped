@@ -28,6 +28,7 @@ public class MainPage extends AppCompatActivity {
         Button buttonPastSpotifyWrapped = findViewById(R.id.buttonPastSpotifyWrapped);
         Button buttonSignOut = findViewById(R.id.buttonSignOut);
         Button buttonGenWrapped = findViewById(R.id.genWrappedActivity);
+        Button quiz = findViewById(R.id.quizButton);
 
         buttonPastSpotifyWrapped.setOnClickListener(view -> {
             startActivity(new Intent(MainPage.this, PastSpotifyWrapped.class));
@@ -39,6 +40,11 @@ public class MainPage extends AppCompatActivity {
         buttonUpdateInfo.setOnClickListener(view -> {
             startActivity(new Intent(MainPage.this, UpdateInfo.class));
         });
+
+        quiz.setOnClickListener(view -> {
+            startActivity(new Intent(MainPage.this, QuizActivity.class));
+        });
+
 
         buttonDeleteAccount.setOnClickListener(view -> {
 //            startActivity(new Intent(MainPage.this, DeleteAccount.class));
