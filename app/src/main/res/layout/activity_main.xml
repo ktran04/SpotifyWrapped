@@ -6,7 +6,7 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/llm_background"
+    android:background="@drawable/home_page_background"
     tools:context=".MainActivity">
 
     <!-- Title TextView -->
