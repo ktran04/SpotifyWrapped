@@ -73,7 +73,7 @@ public class LLMAccess extends AppCompatActivity {
         GenerativeModelFutures model = GenerativeModelFutures.from(gm);
 
         Content content = new Content.Builder()
-                .addText("Name three real songs based off of my favorite songs being Get You by Daniel Caesar and Payphone by Maroon 5")
+                .addText("Name three real songs based off of my favorite artist being:" + text)
                 .build();
 
         Executor executor = Executors.newCachedThreadPool();;
