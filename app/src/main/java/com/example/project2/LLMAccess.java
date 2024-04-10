@@ -1,5 +1,6 @@
 package com.example.project2;
 
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,9 +14,31 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.ai.client.generativeai.GenerativeModel;
+import com.google.ai.client.generativeai.type.Content;
+import com.google.ai.client.generativeai.type.GenerateContentResponse;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import com.google.ai.client.generativeai.java.GenerativeModelFutures;
+import com.google.common.util.concurrent.ListenableFuture;
+
+
 public class LLMAccess extends AppCompatActivity {
     TextView textView;
+    TextView textView2;
     Button Return;
+    String apiKey = "AIzaSyDL0pWCmXUW2HQFFatBgoUtjI-5vRc2RLo";
+    // Use a model that's applicable for your use case (see "Implement basic use cases" below)
+    GenerativeModel gm = new GenerativeModel(/* modelName */ "MODEL_NAME",
+// Access your API key as a Build Configuration variable (see "Set up your API key" above)
+            /* apiKey */ "AIzaSyDL0pWCmXUW2HQFFatBgoUtjI-5vRc2RLo");
+
+    // Use the GenerativeModelFutures Java compatibility layer which offers
+// support for ListenableFuture and Publisher APIs
+    GenerativeModelFutures model = GenerativeModelFutures.from(gm);
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +52,7 @@ public class LLMAccess extends AppCompatActivity {
         });
 
         textView = findViewById(R.id.textView);
+        textView2 = findViewById(R.id.textView2);
         String text = getIntent().getStringExtra("key");
         if (text != null) {
             textView.setText(text);
@@ -42,5 +66,36 @@ public class LLMAccess extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        // For text-only input, use the gemini-pro model
+        GenerativeModel gm = new GenerativeModel(/* modelName */ "gemini-pro",
+// Access your API key as a Build Configuration variable (see "Set up your API key" above)
+                /* apiKey */ "AIzaSyDL0pWCmXUW2HQFFatBgoUtjI-5vRc2RLo");
+        GenerativeModelFutures model = GenerativeModelFutures.from(gm);
+
+        Content content = new Content.Builder()
+                .addText("Name three real songs based off of my favorite songs being Get You by Daniel Caesar and Payphone by Maroon 5")
+                .build();
+
+        Executor executor = Executors.newCachedThreadPool();;
+
+                ListenableFuture<GenerateContentResponse> response = model.generateContent(content);
+        Futures.addCallback(response, new FutureCallback<GenerateContentResponse>() {
+            @Override
+            public void onSuccess(GenerateContentResponse result) {
+                String resultText = result.getText();
+                System.out.println(resultText);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        textView2.setText(resultText);
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                t.printStackTrace();
+            }
+        }, executor);
     }
 }
