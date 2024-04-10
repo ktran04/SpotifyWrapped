@@ -121,13 +121,13 @@ public class MainActivity extends AppCompatActivity {
 
     private int spinnerPosition;
 
-<<<<<<< Updated upstream
+
     Button LLMAccess;
     String value = new String("hello");
-=======
+
     private static final int REQUEST_CODE = 1;
     ImageView imageView;
->>>>>>> Stashed changes
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -205,17 +205,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Find the Sign In button by its ID
-        Button signInButton = findViewById(R.id.buttonSignIn);
 
-        // Set an OnClickListener on the Sign In button
-        signInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Create an Intent to start the SignInActivity
-                Intent signInIntent = new Intent(MainActivity.this, UserLogin.class);
-                startActivity(signInIntent);
-            }
-        });
 
 
 
@@ -230,6 +220,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, LLMAccess.class);
+                value = "HIIIIII";
                 intent.putExtra("key", value);
                 startActivity(intent);
             }

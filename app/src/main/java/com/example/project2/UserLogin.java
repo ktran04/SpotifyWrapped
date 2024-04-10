@@ -47,13 +47,6 @@ public class UserLogin extends AppCompatActivity {
 //                navigateToDeleteAccount();
 //            }
 //        });
-
-        Button backButton = findViewById(R.id.buttonBack);
-        backButton.setOnClickListener(view -> {
-            Intent intent = new Intent(UserLogin.this, MainActivity.class);
-            startActivity(intent);
-            finish();
-        });
     }
 
     private void navigateToSignIn() {

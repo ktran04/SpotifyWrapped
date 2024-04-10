@@ -78,4 +78,16 @@
         android:backgroundTint="#1DB954"
         android:text="Get Past Wrappeds" />
 
+    <Button
+        android:id="@+id/quizButton"
+        android:layout_width="219dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonPastSpotifyWrapped"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="84dp"
+        android:layout_marginTop="61dp"
+        android:layout_marginEnd="92dp"
+        android:text="What's My Taste?" />
+
 </RelativeLayout>
