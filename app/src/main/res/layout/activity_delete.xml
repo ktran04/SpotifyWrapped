@@ -2,19 +2,20 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:gravity="center">
+    android:background="@drawable/deletepage"
+    android:gravity="center"
+    android:padding="16dp">
 
     <!-- Header for Delete Account -->
     <TextView
         android:id="@+id/textViewDeleteAccountHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="36dp"
         android:text="Delete Account"
         android:textSize="28sp"
-        android:textStyle="bold"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="36dp" />
+        android:textStyle="bold" />
 
     <!-- Text box for entering email -->
     <EditText
@@ -33,6 +34,7 @@
         android:layout_below="@id/editTextEmailToDelete"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
+        android:backgroundTint="#1DB954"
         android:text="Delete" />
 
 </RelativeLayout>
