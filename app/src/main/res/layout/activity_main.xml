@@ -6,7 +6,7 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/home_page_background"
+    android:background="@drawable/llm_background"
     tools:context=".MainActivity">
 
     <!-- Title TextView -->
@@ -178,6 +178,15 @@
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 android:orientation="horizontal" />
 
+            <Button
+                android:id="@+id/LLMAccess"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="What does my wrapped say about me?"
+                android:fontFamily="@font/oswald_light"
+                android:visibility="gone"/>
+
+
             <TextView
                 android:id="@+id/listening_time_text_view"
                 android:layout_width="wrap_content"
@@ -192,11 +201,7 @@
                 tools:text="Listening Time: " />
 
 
-            <Button
-                android:id="@+id/LLMAccess"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="How do I act, think, and dress according to Spotfiy??" />
+
 
             <ImageView
                 android:id="@+id/image_summary"
