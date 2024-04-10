@@ -516,6 +516,18 @@ public class MainActivity extends AppCompatActivity {
         imageView.setImageBitmap(generateImageFromProfile(user));
         Button saveImageButton = findViewById(R.id.save_img_btn);
         saveImageButton.setVisibility(View.VISIBLE);
+        LLMAccess = findViewById(R.id.LLMAccess);
+        LLMAccess.setVisibility(View.VISIBLE);
+
+        LLMAccess.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, LLMAccess.class);
+                value = "HIIIIII";
+                intent.putExtra("key", value);
+                startActivity(intent);
+            }
+        });
         saveImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick (View view) {

@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
+    android:background="@drawable/signinpage"
     android:gravity="center"
     android:padding="16dp">
 
@@ -23,7 +23,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
         android:text="Sign Up"
-        android:textColor="#FFFFFF"
+        android:textColor="@color/black"
         android:textSize="28sp"
         android:textStyle="bold" />
 
@@ -33,9 +33,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/textViewLoginHeader"
         android:layout_marginTop="16dp"
-        android:backgroundTint="#FFFFFF"
+        android:backgroundTint="@color/black"
         android:hint="Email"
-        android:textColor="#FFFFFF" />
+        android:textColor="@color/black" />
 
     <EditText
         android:id="@+id/editTextPassword"
@@ -43,9 +43,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/editTextEmail"
         android:layout_marginTop="16dp"
-        android:backgroundTint="#FFFFFF"
+        android:backgroundTint="@color/black"
         android:hint="Password"
-        android:textColor="#FFFFFF" />
+        android:textColor="@color/black" />
 
     <Button
         android:id="@+id/signUpButton"

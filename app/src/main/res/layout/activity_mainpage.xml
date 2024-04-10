@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
-    android:backgroundTint="#000000"
+    android:background="@drawable/gossipgirlie_spotify"
     android:gravity="center"
     android:padding="16dp">
 
@@ -12,18 +11,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="36dp"
+        android:layout_marginBottom="50dp"
         android:text="Your Spotify Wrapped"
-        android:textColor="#FFFFFF"
+        android:textColor="#000000"
         android:textSize="28sp"
         android:textStyle="bold" />
 
     <Button
         android:id="@+id/buttonUpdateInfo"
+        android:layout_marginTop="15dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textViewWrapped"
-        android:layout_marginBottom="16dp"
         android:backgroundTint="@color/spotify_green"
         android:text="Update Info" />
 
@@ -45,6 +44,7 @@
     <!--        android:layout_marginTop="16dp"/>-->
 
     <!--change to below buttonSpotify-->
+
     <Button
         android:id="@+id/buttonSignOut"
         android:layout_width="match_parent"
@@ -56,38 +56,29 @@
 
     <Button
         android:id="@+id/genWrappedActivity"
-        android:layout_width="348dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/buttonSignOut"
-        android:layout_marginStart="87dp"
-        android:layout_marginTop="51dp"
-        android:layout_marginEnd="87dp"
-        android:background="#D1768F"
+        android:layout_marginTop="55dp"
         android:backgroundTint="#1DB954"
         android:text="Make New Wrapped" />
 
     <Button
         android:id="@+id/buttonPastSpotifyWrapped"
-        android:layout_width="338dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/genWrappedActivity"
-        android:layout_marginStart="93dp"
-        android:layout_marginTop="50dp"
-        android:layout_marginEnd="92dp"
-        android:background="#D1768F"
+        android:layout_marginTop="16dp"
         android:backgroundTint="#1DB954"
         android:text="Get Past Wrappeds" />
 
     <Button
         android:id="@+id/quizButton"
-        android:layout_width="219dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/buttonPastSpotifyWrapped"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="84dp"
-        android:layout_marginTop="61dp"
-        android:layout_marginEnd="92dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#1DB954"
         android:text="What's My Taste?" />
 
 </RelativeLayout>
