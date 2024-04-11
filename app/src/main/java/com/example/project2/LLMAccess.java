@@ -55,7 +55,7 @@ public class LLMAccess extends AppCompatActivity {
         textView2 = findViewById(R.id.textView2);
         String text = getIntent().getStringExtra("key");
         if (text != null) {
-            textView.setText(text);
+            textView.setText("Based off of your top artists, we can describe you as: ");
         }
 
         Return = findViewById(R.id.returnButton);
@@ -73,7 +73,11 @@ public class LLMAccess extends AppCompatActivity {
         GenerativeModelFutures model = GenerativeModelFutures.from(gm);
 
         Content content = new Content.Builder()
-                .addText("Name three real songs based off of my favorite artist being:" + text)
+                .addText("Describe how I think and act based off of these being my top artists in about 8 " +
+                        "sentences" +
+                        ". Also give me three recommended " +
+                        "artists based off of"+
+                        " these as well (Give no additional explanation to artists): " + text)
                 .build();
 
         Executor executor = Executors.newCachedThreadPool();;
