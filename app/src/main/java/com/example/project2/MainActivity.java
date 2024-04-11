@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     Button LLMAccess;
-    String value = new String("Taylor Swift");
+    String value = null;
 
     private static final int REQUEST_CODE = 1;
     ImageView imageView;
@@ -522,8 +522,8 @@ public class MainActivity extends AppCompatActivity {
         LLMAccess.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                value = user.getTopArtists().get(0) + ", " + user.getTopArtists().get(1) + ", " + user.getTopArtists().get(2) + ", " + user.getTopArtists().get(3) + ", " + user.getTopArtists().get(4);
                 Intent intent = new Intent(MainActivity.this, LLMAccess.class);
-                value = "HIIIIII";
                 intent.putExtra("key", value);
                 startActivity(intent);
             }
