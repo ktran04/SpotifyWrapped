@@ -103,6 +103,10 @@ public class QuizActivity extends AppCompatActivity {
                             }
                         }
                     }
+                    if (correctAnswer == null) {
+                        Toast.makeText(QuizActivity.this, "Generate a wrapped first!", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(QuizActivity.this, MainPage.class));
+                    }
                     TextView tv = findViewById(R.id.qtv);
                     tv.setText(correctAnswer);
                     while (realOptions.size() < 4) {

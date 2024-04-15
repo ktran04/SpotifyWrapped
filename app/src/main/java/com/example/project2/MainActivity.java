@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     Button LLMAccess;
-    String value = new String("hello");
+    String value = null;
 
     private static final int REQUEST_CODE = 1;
     ImageView imageView;
@@ -215,7 +215,15 @@ public class MainActivity extends AppCompatActivity {
         // Log the initialization completion
         Log.d(TAG, "Activity initialized successfully");
 
-
+        LLMAccess = findViewById(R.id.LLMAccess);
+        LLMAccess.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, LLMAccess.class);
+                intent.putExtra("key", value);
+                startActivity(intent);
+            }
+        });
     }
 
 
@@ -514,8 +522,8 @@ public class MainActivity extends AppCompatActivity {
         LLMAccess.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                value = user.getTopArtists().get(0) + ", " + user.getTopArtists().get(1) + ", " + user.getTopArtists().get(2) + ", " + user.getTopArtists().get(3) + ", " + user.getTopArtists().get(4);
                 Intent intent = new Intent(MainActivity.this, LLMAccess.class);
-                value = "HIIIIII";
                 intent.putExtra("key", value);
                 startActivity(intent);
             }
@@ -590,7 +598,6 @@ public class MainActivity extends AppCompatActivity {
         int screenHeight = getResources().getDisplayMetrics().heightPixels;
 
         // Generate the bitmap with the provided text
-
         return generateBitmap(MainActivity.this, text, backgroundImage, screenWidth, screenHeight);
 
 
