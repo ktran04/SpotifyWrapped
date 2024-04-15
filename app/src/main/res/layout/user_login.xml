@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/signinREAL"
     android:padding="16dp"
     tools:context=".UserLogin">
 
@@ -11,19 +12,22 @@
         android:id="@+id/textViewLoginHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="52dp"
+        android:layout_marginTop="136dp"
         android:text="Login"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:textStyle="bold"
+        android:textColor="@color/black"/>
 
     <Button
         android:id="@+id/buttonSignIn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="128dp"
+        android:layout_marginTop="50dp"
+        android:backgroundTint="@color/spotify_green"
         android:text="Log In"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -36,33 +40,34 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="393dp"
+        android:backgroundTint="@color/spotify_green"
         android:text="Sign Up"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/buttonSignIn" />
 
-<!--    <Button-->
-<!--        android:id="@+id/buttonUpdateInfo"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Update Login Information"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/buttonSignUp"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        android:layout_marginTop="16dp"/>-->
+    <!--    <Button-->
+    <!--        android:id="@+id/buttonUpdateInfo"-->
+    <!--        android:layout_width="0dp"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:text="Update Login Information"-->
+    <!--        app:layout_constraintTop_toBottomOf="@id/buttonSignUp"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        android:layout_marginTop="16dp"/>-->
 
     <!-- figure out delete screen-->
 
-<!--    <Button-->
-<!--        android:id="@+id/buttonDeleteAccount"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Delete Account"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/buttonUpdateInfo"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        android:layout_marginTop="16dp"/>-->
+    <!--    <Button-->
+    <!--        android:id="@+id/buttonDeleteAccount"-->
+    <!--        android:layout_width="0dp"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:text="Delete Account"-->
+    <!--        app:layout_constraintTop_toBottomOf="@id/buttonUpdateInfo"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        android:layout_marginTop="16dp"/>-->
 
     <!-- change bottom constraint to delete button-->
 </androidx.constraintlayout.widget.ConstraintLayout>
