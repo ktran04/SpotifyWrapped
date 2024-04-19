@@ -17,8 +17,6 @@ public class UserLogin extends AppCompatActivity {
 
         buttonSignIn = findViewById(R.id.buttonSignIn);
         buttonSignUp = findViewById(R.id.buttonSignUp);
-        //buttonUpdateInfo = findViewById(R.id.buttonUpdateInfo);
-//        buttonDeleteAccount = findViewById(R.id.buttonDeleteAccount);
 
         buttonSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -34,19 +32,6 @@ public class UserLogin extends AppCompatActivity {
             }
         });
 
-//        buttonUpdateInfo.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                navigateToUpdateInfo();
-//            }
-//        });
-
-//        buttonDeleteAccount.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                navigateToDeleteAccount();
-//            }
-//        });
     }
 
     private void navigateToSignIn() {
@@ -64,8 +49,4 @@ public class UserLogin extends AppCompatActivity {
         startActivity(intent);
     }
 
-//    private void navigateToDeleteAccount() {
-//        Intent intent = new Intent(UserLogin.this, DeleteAccount.class);
-//        startActivity(intent);
-//    }
 }

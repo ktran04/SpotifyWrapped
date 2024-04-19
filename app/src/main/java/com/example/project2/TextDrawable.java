@@ -13,24 +13,19 @@ import okhttp3.Callback;
 
 public class TextDrawable {
 
-    // Method to generate Bitmap from text
     public static Bitmap generateBitmap(Context context, String text, Bitmap backgroundImage, int screenWidth, int screenHeight) {
-        // Calculate initial text size based on desired height
         Typeface customFont = ResourcesCompat.getFont(context, R.font.oswald_light);
         Typeface headingFont = ResourcesCompat.getFont(context, R.font.oswald_regular);
-        float textSize = 40; // Initial text size
+        float textSize = 40;
         Paint textPaint = new Paint();
         textPaint.setTextSize(textSize);
         textPaint.setTypeface(customFont);
 
-        // Calculate desired width and height for the top half of the screen
         int desiredWidth = screenWidth;
         int desiredHeight = screenHeight / 2;
 
-        // Split the text into multiple lines
         String[] lines = text.split("\n");
 
-        // Calculate the total height required for all the text lines
         Rect bounds = new Rect();
         float totalTextHeight = 0;
         int count = 0;
@@ -46,12 +41,10 @@ public class TextDrawable {
             count++;
         }
 
-        // Adjust text size to fit within desired width and height
         while (totalTextHeight > desiredHeight || textPaint.measureText(lines[0]) > desiredWidth) {
-            textSize--; // Decrease text size
+            textSize--;
             textPaint.setTextSize(textSize);
 
-            // Recalculate totalTextHeight
             totalTextHeight = 0;
             for (String line : lines) {
                 textPaint.getTextBounds(line, 0, line.length(), bounds);
@@ -59,30 +52,21 @@ public class TextDrawable {
             }
         }
 
-        // Create a new Bitmap with adjusted size
         Bitmap bitmap = Bitmap.createBitmap(desiredWidth, desiredHeight, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
 
-        // Fill the canvas with light pink color
         if (backgroundImage != null) {
             int imageX = (bitmap.getWidth() - backgroundImage.getWidth()) / 2;
             int imageY = (bitmap.getHeight() - backgroundImage.getHeight()) / 2;
             canvas.drawBitmap(backgroundImage, imageX, imageY, null);
         }
 
-        // Draw text onto the canvas
-        /*float textX = 10; // Adjust the horizontal position of the text
-        float textY = bounds.height() + 50;  // Start drawing text from the top of the canvas
-        for (String line : lines) {
-            canvas.drawText(line, textX, textY, textPaint);
-            textY += bounds.height(); // Move to the next line
-        }*/
-        float botalTextHeight = bounds.height() * lines.length; // Calculate total text height
-        float textY = (desiredHeight - botalTextHeight) / 5 + bounds.height(); // Center vertically
+        float botalTextHeight = bounds.height() * lines.length;
+        float textY = (desiredHeight - botalTextHeight) / 5 + bounds.height();
         int counter = 0;
         for (String line : lines) {
             float lineWidth = textPaint.measureText(line);
-            float textX = (desiredWidth - lineWidth) / 2; // Center horizontally
+            float textX = (desiredWidth - lineWidth) / 2;
             if (counter == 0 || counter == 5 || counter == 12) {
                 textPaint.setTypeface(headingFont);
                 canvas.drawText(line, textX, textY, textPaint);
@@ -92,7 +76,7 @@ public class TextDrawable {
 
             }
 
-            textY += bounds.height(); // Move to the next line
+            textY += bounds.height();
             counter++;
         }
 

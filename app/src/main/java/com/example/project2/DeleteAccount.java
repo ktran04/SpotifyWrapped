@@ -42,7 +42,7 @@ public class DeleteAccount extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "deleteAccount:success");
                             Toast.makeText(DeleteAccount.this, "Account deleted successfully.", Toast.LENGTH_SHORT).show();
-                            finish(); // Close this activity after deletion
+                            finish();
                         } else {
                             Log.w(TAG, "deleteAccount:failure", task.getException());
                             Toast.makeText(DeleteAccount.this, "Failed to delete account.", Toast.LENGTH_SHORT).show();

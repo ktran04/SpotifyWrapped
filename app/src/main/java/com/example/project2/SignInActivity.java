@@ -32,19 +32,16 @@ public class SignInActivity extends AppCompatActivity {
             auth.signInWithEmailAndPassword(emailText.getText().toString(), passText.getText().toString())
                     .addOnCompleteListener(this, task -> {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
-                            Intent myIntent = new Intent(SignInActivity.this, MainPage.class); //should take us to main page MainPage.java
+                            Intent myIntent = new Intent(SignInActivity.this, MainPage.class);
                             startActivity(myIntent);
                         } else {
-                            // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
                             Toast.makeText(SignInActivity.this, "Please enter the correct email and password.", Toast.LENGTH_SHORT).show();
                         }
                     });
         });
 
-        // Add logic for the back button
         Button backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(view -> {
             Intent intent = new Intent(SignInActivity.this, UserLogin.class);

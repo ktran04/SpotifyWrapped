@@ -40,19 +40,16 @@ public class SignUpActivity extends AppCompatActivity {
                 return;
             }
 
-            // Check if the email contains an '@' symbol
             if (!email.contains("@")) {
                 Toast.makeText(SignUpActivity.this, "Please enter a valid email address.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // Check if a user with this email already exists
             auth.fetchSignInMethodsForEmail(email)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             boolean isNewUser = task.getResult().getSignInMethods().isEmpty();
                             if (isNewUser) {
-                                // Create a new user
                                 auth.createUserWithEmailAndPassword(email, password)
                                         .addOnCompleteListener(this, createTask -> {
                                             if (createTask.isSuccessful()) {

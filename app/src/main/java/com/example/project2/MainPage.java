@@ -47,7 +47,6 @@ public class MainPage extends AppCompatActivity {
 
 
         buttonDeleteAccount.setOnClickListener(view -> {
-//            startActivity(new Intent(MainPage.this, DeleteAccount.class));
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
             if (user != null) {
@@ -58,13 +57,12 @@ public class MainPage extends AppCompatActivity {
                                 if (task.isSuccessful()) {
                                     Log.d(TAG, "User account deleted.");
                                     Toast.makeText(MainPage.this, "Account Successfully Deleted", Toast.LENGTH_SHORT).show();
-                                    // Navigate back to UserLogin.class after showing toast
+
                                     Intent intent = new Intent(MainPage.this, UserLogin.class);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK); // Clear the activity stack
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                                     startActivity(intent);
-                                    finish(); // Ensure this activity is closed
+                                    finish();
                                 } else {
-                                    // Handle the failure case, optionally with another toast
                                     Log.d(TAG, "User account deletion failed.");
                                     Toast.makeText(MainPage.this, "Failed to delete account", Toast.LENGTH_SHORT).show();
                                 }
@@ -74,23 +72,16 @@ public class MainPage extends AppCompatActivity {
         });
 
 
-        //To Be Implemented
 
-//        buttonPastSpotifyWrapped.setOnClickListener(view -> {
-//            startActivity(new Intent(MainPage.this, PastSpotifyWrapped.class));
-//        });
 
         buttonSignOut.setOnClickListener(view -> {
             FirebaseAuth.getInstance().signOut();
-            // Log success message
             Log.d(TAG, "User signed out successfully.");
             Toast.makeText(MainPage.this, "You've successfully signed out!", Toast.LENGTH_SHORT).show();
 
-            // For demonstration purposes, navigate back to UserLogin class
-            // after signing out. Replace this with any action you deem necessary.
             Intent intent = new Intent(MainPage.this, UserLogin.class);
             startActivity(intent);
-            finish(); // Close the current activity
+            finish();
         });
     }
 }

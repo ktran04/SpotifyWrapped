@@ -27,7 +27,7 @@ public class UpdateInfo extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_update_info); // Replace with your actual layout file name
+        setContentView(R.layout.activity_update_info);
 
         editTextNewEmail = findViewById(R.id.editTextEmail);
         editTextNewPassword = findViewById(R.id.editTextPassword);
@@ -55,11 +55,9 @@ public class UpdateInfo extends AppCompatActivity {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (user != null) {
-            // Reset flags
             emailUpdateSuccess = false;
             passwordUpdateSuccess = false;
 
-            // Update email
             user.updateEmail(newEmail)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         public void onComplete(@NonNull Task<Void> task) {
@@ -72,7 +70,6 @@ public class UpdateInfo extends AppCompatActivity {
                         }
                     });
 
-            // Update password
             user.updatePassword(newPassword)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
@@ -90,10 +87,9 @@ public class UpdateInfo extends AppCompatActivity {
 
     private void checkAndNavigateBack() {
         if (emailUpdateSuccess && passwordUpdateSuccess) {
-            // Both email and password have been successfully updated, navigate back
             Intent intent = new Intent(UpdateInfo.this, UserLogin.class);
             startActivity(intent);
-            finish(); // Optional: if you don't want users to return to this screen with the back button.
+            finish();
         }
     }
 }

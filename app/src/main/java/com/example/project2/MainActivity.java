@@ -158,10 +158,10 @@ public class MainActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
-        // Initialize the views
+
         profileTextView = (TextView) findViewById(R.id.response_text_view);
 
-        // Initialize the buttons
+
         Button tokenBtn = (Button) findViewById(R.id.token_btn);
 
         topGenresRecyclerView = findViewById(R.id.top_genres_recycler_view);
@@ -177,15 +177,13 @@ public class MainActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         trackRecyclerView.setLayoutManager(layoutManager);
         topArtistsRecyclerView.setLayoutManager(artistLayoutManager);
-        TopArtistsAdapter artistsAdapter = new TopArtistsAdapter(this, new ArrayList<>()); // Pass empty list initially
+        TopArtistsAdapter artistsAdapter = new TopArtistsAdapter(this, new ArrayList<>());
         topArtistsRecyclerView.setAdapter(artistsAdapter);
 
 
-        // Set up adapter
-        TopTracksAdapter trackAdapter; // Pass empty list initially
+        TopTracksAdapter trackAdapter;
         trackAdapter = new TopTracksAdapter(new ArrayList<>());
         trackRecyclerView.setAdapter(trackAdapter);
-        // Set the click listeners for the buttons
         tokenBtn.setOnClickListener((v) -> {
             Log.d(TAG, "Token Button Clicked");
             user = new WrappedData();
@@ -204,15 +202,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        // Find the Sign In button by its ID
-
-
-
-
-
-        // Initialize the views
-
-        // Log the initialization completion
         Log.d(TAG, "Activity initialized successfully");
 
         LLMAccess = findViewById(R.id.LLMAccess);
@@ -227,12 +216,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    /**
-     * Get token from Spotify
-     * This method will open the Spotify login activity and get the token
-     * What is token?
-     * https://developer.spotify.com/documentation/general/guides/authorization-guide/
-     */
+
     public void getToken(int code) {
         Log.d(TAG, "getToken() called with code: " + code);
         final AuthorizationRequest request = getAuthenticationRequest(AuthorizationResponse.Type.TOKEN, code);
@@ -240,31 +224,21 @@ public class MainActivity extends AppCompatActivity {
         AuthorizationClient.openLoginActivity(MainActivity.this, code, request);
     }
 
-    /**
-     * Get code from Spotify
-     * This method will open the Spotify login activity and get the code
-     * What is code?
-     * https://developer.spotify.com/documentation/general/guides/authorization-guide/
-     */
+
     public void getCode() {
         final AuthorizationRequest request = getAuthenticationRequest(AuthorizationResponse.Type.CODE, 1);
         AuthorizationClient.openLoginActivity(MainActivity.this, AUTH_CODE_REQUEST_CODE, request);
     }
 
 
-    /**
-     * When the app leaves this activity to momentarily get a token/code, this function
-     * fetches the result of that external activity to get the response from Spotify
-     */
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         final AuthorizationResponse response = AuthorizationClient.getResponse(resultCode, data);
 
-        // Check which request code is present (if any)
         if (AUTH_TOKEN_REQUEST_CODE == requestCode) {
             mAccessToken = response.getAccessToken();
-            // updateSpotifyTokenInFirestore(mAccessToken);
             onGetUserProfileClicked();
             getToken(2);
 
@@ -281,10 +255,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    /**
-     * Puts spotify token into firestore database
-     * @param token the token from the user
-     */
+
 
     private void updateSpotifyTokenInFirestore(String token) {
         EditText editTextDatabase = findViewById(R.id.editTextDatabase);
@@ -299,9 +270,7 @@ public class MainActivity extends AppCompatActivity {
         user.put("user", user);
         user.put("spotifyToken", token);
 
-        // Update Firestore collection reference
         db.collection("sample")
-                // Update document reference to "sample1"
                 .document("sample1")
                 .set(user)
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Spotify token successfully stored!"))
@@ -313,12 +282,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    /**
-     * Get user profile
-     * This method will get the user profile using the token
-     */
-
-
 
     public void onGetUserProfileClicked() {
         if (mAccessToken == null) {
@@ -326,7 +289,6 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        // Create a request to get the user profile
         final Request request = new Request.Builder()
                 .url("https://api.spotify.com/v1/me")
                 .addHeader("Authorization", "Bearer " + mAccessToken)
@@ -349,11 +311,9 @@ public class MainActivity extends AppCompatActivity {
                     Gson gson = new GsonBuilder().setPrettyPrinting().create();
                     UserProfile userProfile = gson.fromJson(jsonResponse, UserProfile.class);
 
-                    // Format the user profile data
                     user.setUsername(userProfile.display_name);
                     user.setFollowers(userProfile.followers.total);
                     user.setEmail(userProfile.email);
-                    // Parse JSON response into a Java object
                 } catch (IOException e) {
                     Log.d("IO", "Failed to read response: " + e);
                     Toast.makeText(MainActivity.this, "Failed to read response, watch Logcat for more details",
@@ -373,7 +333,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Define a class to represent user profile data
     public void parseTopData(String type) {
         Log.d(TAG, "Get user top artists clicked");
         String url;
@@ -484,29 +443,24 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        // Set the username
         TextView usernameTextView = findViewById(R.id.username_text_view);
         usernameTextView.setText("Welcome: " + username + exString());
 
-        // Set the top artists using RecyclerView
         RecyclerView topArtistsRecyclerView = findViewById(R.id.top_artists_recycler_view);
         LinearLayoutManager artistLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         topArtistsRecyclerView.setLayoutManager(artistLayoutManager);
         TopArtistsAdapter artistsAdapter = new TopArtistsAdapter(this, topArtists);
         topArtistsRecyclerView.setAdapter(artistsAdapter);
 
-        // Set the top genres using RecyclerView
         RecyclerView topGenresRecyclerView = findViewById(R.id.top_genres_recycler_view);
         LinearLayoutManager genresLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         topGenresRecyclerView.setLayoutManager(genresLayoutManager);
         TopGenresAdapter genresAdapter = new TopGenresAdapter(topGenres);
         topGenresRecyclerView.setAdapter(genresAdapter);
 
-        // Set the total listening time
         TextView listeningTimeTextView = findViewById(R.id.listening_time_text_view);
         listeningTimeTextView.setText("            Total Listening Time: " + totalListeningTimeMinutes + " minutes");
 
-        // Set the top tracks using RecyclerView
         RecyclerView topTracksRecyclerView = findViewById(R.id.top_tracks_recycler_view);
         LinearLayoutManager trackLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         topTracksRecyclerView.setLayoutManager(trackLayoutManager);

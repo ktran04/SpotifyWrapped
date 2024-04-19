@@ -40,7 +40,7 @@ public class TopGenresAdapter extends RecyclerView.Adapter<TopGenresAdapter.Genr
 
         public GenreViewHolder(@NonNull View itemView) {
             super(itemView);
-            genreTextView = itemView.findViewById(R.id.top_genres_text_view); // Assuming top_genre_text_view is the ID of TextView in top_genre.xml
+            genreTextView = itemView.findViewById(R.id.top_genres_text_view);
         }
 
         public void bind(String genre) {

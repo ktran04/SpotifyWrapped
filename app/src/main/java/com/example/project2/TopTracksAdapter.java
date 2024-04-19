@@ -40,7 +40,7 @@ public class TopTracksAdapter extends RecyclerView.Adapter<TopTracksAdapter.Trac
 
         public TrackViewHolder(@NonNull View itemView) {
             super(itemView);
-            trackTextView = itemView.findViewById(R.id.top_tracks_text_view); // assuming trackTextView is the ID of TextView in item_track.xml
+            trackTextView = itemView.findViewById(R.id.top_tracks_text_view);
         }
 
         public void bind(String track) {

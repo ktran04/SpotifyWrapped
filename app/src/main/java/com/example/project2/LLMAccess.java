@@ -30,13 +30,8 @@ public class LLMAccess extends AppCompatActivity {
     TextView textView2;
     Button Return;
     String apiKey = "AIzaSyDL0pWCmXUW2HQFFatBgoUtjI-5vRc2RLo";
-    // Use a model that's applicable for your use case (see "Implement basic use cases" below)
-    GenerativeModel gm = new GenerativeModel(/* modelName */ "MODEL_NAME",
-// Access your API key as a Build Configuration variable (see "Set up your API key" above)
-            /* apiKey */ "AIzaSyDL0pWCmXUW2HQFFatBgoUtjI-5vRc2RLo");
+    GenerativeModel gm = new GenerativeModel("MODEL_NAME", "AIzaSyDL0pWCmXUW2HQFFatBgoUtjI-5vRc2RLo");
 
-    // Use the GenerativeModelFutures Java compatibility layer which offers
-// support for ListenableFuture and Publisher APIs
     GenerativeModelFutures model = GenerativeModelFutures.from(gm);
 
     @SuppressLint("MissingInflatedId")
@@ -66,10 +61,7 @@ public class LLMAccess extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        // For text-only input, use the gemini-pro model
-        GenerativeModel gm = new GenerativeModel(/* modelName */ "gemini-pro",
-// Access your API key as a Build Configuration variable (see "Set up your API key" above)
-                /* apiKey */ "AIzaSyDL0pWCmXUW2HQFFatBgoUtjI-5vRc2RLo");
+        GenerativeModel gm = new GenerativeModel( "gemini-pro", "AIzaSyDL0pWCmXUW2HQFFatBgoUtjI-5vRc2RLo");
         GenerativeModelFutures model = GenerativeModelFutures.from(gm);
 
         Content content = new Content.Builder()

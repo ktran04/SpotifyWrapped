@@ -112,12 +112,10 @@ public class PastSpotifyWrapped extends AppCompatActivity {
                         });
                     }
                     public void displayData(int i) {
-                        // Old stuff (you can delete this idc)
                         TextView posView = findViewById(R.id.pwPos);
                         String temp = (i + 1) + "/" + pastWrappeds.size();
                         posView.setText(temp);
 
-                        // Data we need to display
                         WrappedData data = pastWrappeds.get(i);
                         String username = data.getUsername();
                         String timespan = timespan(data.getSp());
@@ -125,29 +123,24 @@ public class PastSpotifyWrapped extends AppCompatActivity {
                         List<String> topArtists = data.getTopArtists();
                         List<String> topGenres = data.getTopGenres();
                         int totalListeningTimeMinutes = data.getListeningTimeMS() / 60000;
-                        // Set the username
                         TextView usernameTextView = findViewById(R.id.username_text_view);
                         usernameTextView.setText("Welcome: " + username + "\nHere's your last " + timespan + " in music!");
 
-                        // Set the top artists using RecyclerView
                         RecyclerView topArtistsRecyclerView = findViewById(R.id.top_artists_recycler_view1);
                         LinearLayoutManager artistLayoutManager = new LinearLayoutManager(PastSpotifyWrapped.this, LinearLayoutManager.HORIZONTAL, false);
                         topArtistsRecyclerView.setLayoutManager(artistLayoutManager);
                         TopArtistsAdapter artistsAdapter = new TopArtistsAdapter(PastSpotifyWrapped.this, topArtists);
                         topArtistsRecyclerView.setAdapter(artistsAdapter);
 
-                        // Set the top genres using RecyclerView
                         RecyclerView topGenresRecyclerView = findViewById(R.id.top_genres_recycler_view1);
                         LinearLayoutManager genresLayoutManager = new LinearLayoutManager(PastSpotifyWrapped.this, LinearLayoutManager.HORIZONTAL, false);
                         topGenresRecyclerView.setLayoutManager(genresLayoutManager);
                         TopGenresAdapter genresAdapter = new TopGenresAdapter(topGenres);
                         topGenresRecyclerView.setAdapter(genresAdapter);
 
-                        // Set the total listening time
                         TextView listeningTimeTextView = findViewById(R.id.listening_time_text_view2);
                         listeningTimeTextView.setText("            Total Listening Time: " + totalListeningTimeMinutes + " minutes");
 
-                        // Set the top tracks using RecyclerView
                         RecyclerView topTracksRecyclerView = findViewById(R.id.top_tracks_recycler_view1);
                         LinearLayoutManager trackLayoutManager = new LinearLayoutManager(PastSpotifyWrapped.this, LinearLayoutManager.HORIZONTAL, false);
                         topTracksRecyclerView.setLayoutManager(trackLayoutManager);
