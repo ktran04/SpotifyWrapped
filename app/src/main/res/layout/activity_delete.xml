@@ -6,7 +6,6 @@
     android:gravity="center"
     android:padding="16dp">
 
-    <!-- Header for Delete Account -->
     <TextView
         android:id="@+id/textViewDeleteAccountHeader"
         android:layout_width="wrap_content"
@@ -17,7 +16,6 @@
         android:textSize="28sp"
         android:textStyle="bold" />
 
-    <!-- Text box for entering email -->
     <EditText
         android:id="@+id/editTextEmailToDelete"
         android:layout_width="match_parent"
@@ -26,7 +24,6 @@
         android:layout_marginBottom="16dp"
         android:hint="Enter Email" />
 
-    <!-- Button to delete account -->
     <Button
         android:id="@+id/deleteButton"
         android:layout_width="wrap_content"
