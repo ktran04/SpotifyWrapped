@@ -1,6 +1,6 @@
 # CS2340-Proj2
 
-This project appears to be an Android application built using Gradle. Below is a summary of the folder structure and its main components:
+This android app allows a user to pick a specified period of time for their spotify wrapped (1 week, 1 month, etc) instead of annually.
 
 ## Structure
 - `app/` - Contains the main Android app source code, build configuration, and resources.
