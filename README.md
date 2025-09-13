@@ -39,5 +39,3 @@ This project appears to be an Android application built using Gradle. Below is a
 ## License
 Add your license information here.
 
----
-*This README was auto-generated based on the project structure.*
